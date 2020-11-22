@@ -1,0 +1,23 @@
+name: Frontend
+on:
+  push:
+jobs:
+  frontend:
+    name: Frontend test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Package install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Lint check
+        run: yarn lint
+      - name: Jest
+        run: yarn jest
