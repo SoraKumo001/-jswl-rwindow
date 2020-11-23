@@ -1,0 +1,137 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      body {
+        box-sizing: border-box;
+        padding: 0 16px;
+      }
+      .link {
+        display: block;
+        margin: 2px;
+        padding: 8px;
+        border: solid 1px;
+        border-radius: 8px;
+        max-width: 400px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .contents {
+        display: flex;
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+      }
+      h1 {
+        border-bottom: solid 3px;
+      }
+      .link:hover {
+        background-color: lightgray;
+      }
+      .cellImage {
+        text-align: end;
+      }
+      .imageTitle {
+        text-align: center;
+        border-bottom: 1px solid;
+      }
+      th {
+        border-bottom: solid 2px;
+      }
+      td {
+        border-bottom: solid 1px;
+        padding: 8px;
+      }
+      .images {
+        flex: 1;
+        overflow: auto;
+        padding: 0 16px;
+      }
+      .images img {
+        max-width: 100%;
+      }
+    </style>
+    <script>
+      const getStories = async () => {
+        const res = await fetch("./stories/index.txt?" + Date.now());
+        return res && (await res.text()).split("\n").filter((v) => v);
+      };
+      const getImages = async (story) => {
+        const res = await fetch(`./captures/${story}/index.txt?` + Date.now());
+        return res && (await res.text()).split("\n").filter((v) => v && /\.png$/.test(v));
+      };
+      const getDiffs = async (story) => {
+        const res = await fetch(`./captures/${story}/__diff_output__/index.txt?` + Date.now());
+        return res && (await res.text()).split("\n").filter((v) => v && /\.png$/.test(v));
+      };
+      const imageArea = (images, cell, story, prefix) => {
+        if (images) {
+          cell.className = "cellImage";
+          const link = document.createElement("a");
+          link.className = "link";
+          link.innerHTML = `${images.length}`;
+          cell.appendChild(link);
+          link.onclick = (e) => {
+            e.preventDefault();
+            const box = document.querySelector(".images");
+            while (box.childNodes.length) box.removeChild(box.childNodes[0]);
+            images.forEach((file) => {
+              const title = document.createElement("div");
+              title.className = "imageTitle";
+              title.innerText = file;
+              box.appendChild(title);
+              const img = document.createElement("img");
+              img.src = `./captures/${story}${prefix}/${file}`;
+              img.onclick = () => open(img.src, "_blank");
+              box.appendChild(img);
+            });
+          };
+        }
+      };
+      const stories = async () => {
+        const table = document.querySelector("table");
+        const stories = await getStories();
+        stories &&
+          stories.forEach(async (story) => {
+            const row = table.insertRow();
+            const cellStory = row.insertCell();
+            cellStory.innerHTML = `<a class="link" href='./stories/${story}/?${Date.now()}'+>${story}</a>`;
+            const cellImage = row.insertCell();
+            getImages(story).then((images) =>  imageArea(images, cellImage, story, ""));
+            const cellDiff = row.insertCell();
+            getDiffs(story).then((images) =>
+              imageArea(images, cellDiff, story, "/__diff_output__")
+            );
+          });
+      };
+      addEventListener("DOMContentLoaded", () => {
+        stories();
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Stories</h1>
+    <div class="contents">
+      <table>
+        <tr>
+          <th>Story</th>
+          <th>Image</th>
+          <th>Diff</th>
+        </tr>
+      </table>
+      <div class="images"></div>
+    </div>
+  </body>
+</html>

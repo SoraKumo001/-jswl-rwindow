@@ -2,8 +2,8 @@ name: Frontend
 on:
   push:
 jobs:
-  frontend:
-    name: Frontend test
+  ESLint:
+    name: ESLint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +17,170 @@ jobs:
       - name: Package install
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn
-      - name: Lint check
+      - name: Lint
         run: yarn lint
-      - name: Jest
-        run: yarn jest
+  Build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Package install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Build
+        run: yarn build
+  Jest:
+    name: Jest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Package install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Pull Mastar Shapshot
+        if: ${{github.ref != 'refs/heads/master'}}
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          WORK_DIR: temp
+          TARGET_PATH: captures/master
+        run: |          
+          mkdir -p ${WORK_DIR}/${TARGET_PATH}
+          cd ${WORK_DIR}
+          git init
+          git config --global user.name $GITHUB_ACTOR
+          git config --global user.email ${GITHUB_ACTOR}@git
+          git config core.sparsecheckout true
+          git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+          echo /${TARGET_PATH}/ > .git/info/sparse-checkout    
+          git pull origin gh-pages || true
+          git checkout -b gh-pages   
+          mkdir -p ../src/__image_snapshots__
+          mv -f ${TARGET_PATH}/* ../src/__image_snapshots__ || true
+      - name: Storybook
+        run: yarn storybook:build
+      - name: Jest(!Master)
+        if: ${{github.ref != 'refs/heads/master'}}
+        run: |
+            yarn test || (mv -f src/__image_snapshots__/__diff_output__ src; yarn test -u)
+            mv -f src/__diff_output__ src/__image_snapshots__ || true
+            cd src/__image_snapshots__ && ls > index.txt
+            cd __diff_output__ && ls > index.txt || true
+      - name: Jest(Master)
+        if: ${{github.ref == 'refs/heads/master'}}
+        run: |
+            yarn test:update
+            cd src/__image_snapshots__ && ls > index.txt
+      - name: Package install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Git init 
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          TARGET_PATH: captures
+        run: |          
+          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
+          mkdir -p __gh-pages__/${TARGET_PATH}
+          cd __gh-pages__
+          git init
+          git config --global user.name $GITHUB_ACTOR
+          git config --global user.email ${GITHUB_ACTOR}@git
+          git config core.sparsecheckout true
+          git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+          echo /${TARGET_PATH}/${BRANCH} > .git/info/sparse-checkout
+          echo /${TARGET_PATH}/index.txt >> .git/info/sparse-checkout
+          echo /index.html >> .git/info/sparse-checkout
+          echo /.gitignore >> .git/info/sparse-checkout
+          cp -f ../.gitignore .          
+          git pull origin gh-pages || true
+          git checkout -b gh-pages        
+      - name: Create gh-pages
+        env:
+          TARGET_PATH: captures
+          SRC_PATH: src/__image_snapshots__
+        run: |
+          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
+          cd __gh-pages__
+          rm -rf ${TARGET_PATH}/${BRANCH} || true
+          mv ../${SRC_PATH} captures/${BRANCH}
+          cp -f ../.github/workflows/res/index.html .
+          git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
+      - name: Save gh-pages
+        run: |
+          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///'`
+          cd __gh-pages__
+          git add .
+          git commit -m "$BRANCH" || true
+          git push origin gh-pages || true
+
+  Storybook:
+    name: Storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Package install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Storybook
+        run: yarn storybook:build
+      - name: Git init # cloneせずに、最小限のファイルのみを管理対象とする
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          TARGET_PATH: stories
+        run: |          
+          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
+          mkdir -p __gh-pages__/${TARGET_PATH}
+          cd __gh-pages__
+          git init
+          git config --global user.name $GITHUB_ACTOR
+          git config --global user.email ${GITHUB_ACTOR}@git
+          git config core.sparsecheckout true
+          git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+          echo /${TARGET_PATH}/${BRANCH} > .git/info/sparse-checkout
+          echo /${TARGET_PATH}/index.txt >> .git/info/sparse-checkout
+          echo /index.html >> .git/info/sparse-checkout
+          echo /.gitignore >> .git/info/sparse-checkout
+          cp -f ../.gitignore .   
+          git pull origin gh-pages || true
+          git checkout -b gh-pages        
+      - name: Create gh-pages
+        env:
+          TARGET_PATH: stories
+        run: |
+          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
+          cd __gh-pages__
+          rm -rf ${TARGET_PATH}/${BRANCH} || true
+          mv ../storybook-static ${TARGET_PATH}/${BRANCH}
+          cp -f ../.github/workflows/res/index.html .
+          git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
+      # - name: Setup tmate session
+      #   env:
+      #     TARGET_PATH: stories
+      #   uses: mxschmitt/action-tmate@v1
+      - name: Save gh-pages
+        run: |
+          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///'`
+          cd __gh-pages__
+          git add .
+          git commit -m "$BRANCH" || true
+          git push origin gh-pages || true

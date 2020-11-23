@@ -3,5 +3,6 @@ node_modules
 dist
 storybook-static
 __screenshots__
+__image_snapshots__
 __reg__
 *.log
