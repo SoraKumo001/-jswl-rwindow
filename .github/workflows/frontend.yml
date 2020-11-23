@@ -103,7 +103,9 @@ jobs:
           echo /${TARGET_PATH}/${BRANCH} > .git/info/sparse-checkout
           echo /${TARGET_PATH}/index.txt >> .git/info/sparse-checkout
           echo /index.html >> .git/info/sparse-checkout
+          echo /.nojekyll >> .git/info/sparse-checkout
           echo /.gitignore >> .git/info/sparse-checkout
+          touch .nojekyll
           cp -f ../.gitignore .          
           git pull origin gh-pages || true
           git checkout -b gh-pages        
