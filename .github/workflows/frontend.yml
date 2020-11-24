@@ -75,15 +75,15 @@ jobs:
       - name: Jest(!Master)
         if: ${{github.ref != 'refs/heads/master'}}
         run: |
-            yarn test || (mv -f src/__image_snapshots__/__diff_output__ src || true; yarn test -u)
+            yarn test || (mv -f src/__image_snapshots__/__diff_output__ src || true; yarn test:update)
             mv -f src/__diff_output__ src/__image_snapshots__ || true
-            cd src/__image_snapshots__ && ls > index.txt
-            cd __diff_output__ && ls > index.txt || true
+            cd src/__image_snapshots__ && ls | grep -i \.png$ > index.txt
+            cd __diff_output__ && ls | grep -i \.png$ > index.txt || true
       - name: Jest(Master)
         if: ${{github.ref == 'refs/heads/master'}}
         run: |
             yarn test:update
-            cd src/__image_snapshots__ && ls > index.txt
+            cd src/__image_snapshots__ && ls | grep -i \.png$ > index.txt
       - name: Package install
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn
