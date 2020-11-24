@@ -75,7 +75,7 @@ jobs:
       - name: Jest(!Master)
         if: ${{github.ref != 'refs/heads/master'}}
         run: |
-            yarn test || (mv -f src/__image_snapshots__/__diff_output__ src; yarn test -u)
+            yarn test || (mv -f src/__image_snapshots__/__diff_output__ src || true; yarn test -u)
             mv -f src/__diff_output__ src/__image_snapshots__ || true
             cd src/__image_snapshots__ && ls > index.txt
             cd __diff_output__ && ls > index.txt || true
