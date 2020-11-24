@@ -11,7 +11,7 @@ module.exports = {
   testEnvironment: "node",
   testRegex: ".test.[jt]s$",
   transform: {
-    "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.[jt]sx?$": "ts-jest",
     ".+\\.(svg|css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$":
       "jest-transform-stub",
   },
