@@ -1,24 +1,53 @@
 import React from "react";
 import { Icon, Icons } from ".";
 import styled from "styled-components";
+import { Decorator, Viewport } from "../../storybook";
 
 export default {
   title: "Pages/Icon",
+  decorators: [Decorator],
   component: Icon,
 };
 
 const Root = styled.div`
   td {
-    height: 32px;
     border: 1px solid;
     box-sizing: border-box;
     line-height: 0;
   }
+  td {
+    border: 1px solid;
+    box-sizing: border-box;
+    line-height: 0;
+  }
+  .normal {
+    td {
+      height: 32px;
+    }
+  }
+  .big {
+    td {
+      height: 64px;
+    }
+  }
 `;
 
-export const Normal = () => (
+export const PC = () => (
   <Root>
-    <table>
+    <div>Normal</div>
+    <table className="normal">
+      {Object.entries(Icons).map(([key, value]) => (
+        <tr key={key}>
+          <td>{`<Icon src={Icons.${key}}/>`}</td>
+          <td>
+            <Icon src={value} />
+          </td>
+        </tr>
+      ))}
+    </table>
+    <hr />
+    <div>Big</div>
+    <table className="big">
       {Object.entries(Icons).map(([key, value]) => (
         <tr key={key}>
           <td>{`<Icon src={Icons.${key}}/>`}</td>
@@ -30,27 +59,7 @@ export const Normal = () => (
     </table>
   </Root>
 );
+PC.parameters = Viewport("PC");
 
-const Root2 = styled.div`
-  td {
-    height: 48px;
-    border: 1px solid;
-    box-sizing: border-box;
-    line-height: 0;
-  }
-`;
-
-export const Big = () => (
-  <Root2>
-    <table>
-      {Object.entries(Icons).map(([key, value]) => (
-        <tr key={key}>
-          <td>{`<Icon src={Icons.${key}}/>`}</td>
-          <td>
-            <Icon src={value} />
-          </td>
-        </tr>
-      ))}
-    </table>
-  </Root2>
-);
+export const SP = PC.bind({});
+SP.parameters = Viewport("SP");

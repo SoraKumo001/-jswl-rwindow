@@ -6,6 +6,8 @@ import Max from "../../Images/max.svg";
 import Min from "../../Images/min.svg";
 import Normal from "../../Images/normal.svg";
 
+type IconType = "button";
+
 type Props = {
   /**
    * Icon URL
@@ -13,6 +15,7 @@ type Props = {
    * @type {string}
    */
   src: string;
+  type?: [IconType] | IconType;
 };
 
 /**
@@ -20,5 +23,10 @@ type Props = {
  *
  * @param {Props} { src }
  */
-export const Icon: FC<Props> = ({ src }) => <Root src={src} />;
+export const Icon: FC<Props> = ({ src, type }) => (
+  <Root className={isType(type, "button") ? "button" : undefined} src={src} />
+);
 export const Icons = { Close, Max, Min, Normal };
+
+const isType = (src: IconType | [IconType] | undefined, type: IconType) =>
+  src && (src === type || (Array.isArray(src) && src.includes(type)));

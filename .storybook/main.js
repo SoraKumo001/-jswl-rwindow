@@ -6,9 +6,10 @@ module.exports = {
     "@storybook/addon-storysource",
     "@storybook/addon-actions",
     "@storybook/addon-docs",
+    "@storybook/addon-viewport",
   ],
   typescript: {
-  //  check: true,
+    //  check: true,
   },
   babel: async (options) => ({
     ...options,
