@@ -11,7 +11,7 @@ export default {
 export const PC = () => (
   <>
     <div>Active</div>
-    <TitleBar>
+    <TitleBar active>
       AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     </TitleBar>
     <TitleBar active>通常時</TitleBar>
