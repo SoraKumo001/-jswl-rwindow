@@ -57,6 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           WORK_DIR: temp
           TARGET_PATH: captures/master
+          SRC_PATH: __image_snapshots__
         run: |
           mkdir -p ${WORK_DIR}/${TARGET_PATH}
           cd ${WORK_DIR}
@@ -69,6 +70,7 @@ jobs:
           git pull origin gh-pages || true
           git checkout -b gh-pages   
           mv -f ${TARGET_PATH}/* .. || true
+          mv -f ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../SRC_PATH || true
       - name: Storybook
         run: yarn storybook:build
       - name: Jest(!Master)

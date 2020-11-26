@@ -22,6 +22,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           WORK_DIR: temp
           TARGET_PATH: captures
+          SRC_PATH: __image_snapshots__
         run: |
           BRANCH=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`         
           mkdir -p ${WORK_DIR}/${TARGET_PATH}/${BRANCH}
@@ -34,7 +35,7 @@ jobs:
           echo /${TARGET_PATH}/ > .git/info/sparse-checkout    
           git pull origin gh-pages || true
           git checkout -b gh-pages   
-          mv -f ${TARGET_PATH}/${BRANCH}/* .. || true
+          mv -f ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../SRC_PATH || true
       - name: Storybook
         run: yarn storybook:build
       - name: Jest

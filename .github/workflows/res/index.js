@@ -2,6 +2,10 @@ const getStories = async () => {
   const res = await fetch("./stories/index.txt?" + Date.now()).catch(() => null);
   return res && (await res.text()).split("\n").filter((v) => v);
 };
+const getCaptures = async () => {
+  const res = await fetch("./captures/index.txt?" + Date.now()).catch(() => null);
+  return res && (await res.text()).split("\n").filter((v) => v);
+};
 const getImages = async (story, prefix) => {
   const res = await fetch(`./captures/${story}/${prefix}/index.txt?` + Date.now()).catch(
     () => null
@@ -13,7 +17,7 @@ const getImages = async (story, prefix) => {
 };
 const getSnapshots = async () =>
   Promise.all(
-    (await getStories())?.map(async (story) => [
+    (await getCaptures())?.map(async (story) => [
       story,
       await Promise.all(["image_snapshots", "diff_output"].map((name) => getImages(story, name))),
     ])
