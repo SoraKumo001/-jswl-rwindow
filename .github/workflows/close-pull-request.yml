@@ -29,12 +29,12 @@ jobs:
           echo /${TARGET_PATH2}/index.txt >> .git/info/sparse-checkout
           git pull origin gh-pages || true
           git checkout -b gh-pages
-      - name: Setup tmate session
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-          TARGET_PATH1: captures
-          TARGET_PATH2: stories
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+      #     TARGET_PATH1: captures
+      #     TARGET_PATH2: stories
+      #   uses: mxschmitt/action-tmate@v3
       - name: Delete gh-pages
         env:
           TARGET_PATH1: captures
