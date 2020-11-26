@@ -22,6 +22,7 @@ export const PC = () => (
   <>
     <Box>
       <Border borderSize={8} />
+      あああ
     </Box>
     <Box style={{ top: "64px", left: "64px" }}>
       <Border borderSize={8} />
