@@ -84,7 +84,7 @@ jobs:
           yarn test || (mv __image_diff__ __image_diff2__ || true; yarn test:update)
           mv __image_diff2__ __image_diff__ || true
           cd __image_snapshots__ && ls | grep -i \.png$ > index.txt
-          cd __image_diff__ && ls | grep -i \.png$ > index.txt || true
+          cd ../__image_diff__ && ls | grep -i \.png$ > index.txt || true
       - name: Jest(Master)
         if: ${{github.ref == 'refs/heads/master'}}
         run: |
