@@ -37,6 +37,11 @@ jobs:
           rm -rf ${TARGET_PATH2}/${BRANCH} || true          
           git ls-files | sed -r "s/^${TARGET_PATH1}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH1}/index.txt
           git ls-files | sed -r "s/^${TARGET_PATH2}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH2}/index.txt
+      - name: Setup tmate session
+        env:
+          TARGET_PATH1: captures
+          TARGET_PATH2: stories
+        uses: mxschmitt/action-tmate@v3
       - name: Save gh-pages
         working-directory: ./__gh-pages__
         run: |

@@ -113,14 +113,12 @@ jobs:
           mv ../${SRC_PATH} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` || true
           mv ../${SRC_PATH2} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH2} | sed -r "s/__(.*)__/\1/"` || true
           git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
       - name: Save gh-pages
         working-directory: ./__gh-pages__
         run: |
           BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///'`
           git add .
-          git commit -m "$BRANCH" || true
+          git commit -m "Create Snapshot($BRANCH)" || true
           git push origin gh-pages || true
   Storybook:
     name: Storybook
@@ -172,5 +170,5 @@ jobs:
           BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///'`
           cd __gh-pages__
           git add .
-          git commit -m "$BRANCH" || true
+          git commit -m "Create Story($BRANCH)" || true
           git push origin gh-pages || true
