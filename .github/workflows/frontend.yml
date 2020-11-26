@@ -163,7 +163,7 @@ jobs:
           cd __gh-pages__
           rm -rf ${TARGET_PATH}/${BRANCH} || true
           mv ../storybook-static ${TARGET_PATH}/${BRANCH}
-          cp -f ../.github/workflows/res/. .
+          cp -rf ../.github/workflows/res/. .
           git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
       - name: Save gh-pages
         run: |
