@@ -12,7 +12,7 @@ jobs:
           TARGET_PATH1: captures
           TARGET_PATH2: stories
         run: |
-          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref"`
+          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           mkdir -p __gh-pages__/${TARGET_PATH}
           cd __gh-pages__
           git init
@@ -32,7 +32,7 @@ jobs:
           TARGET_PATH2: stories
         working-directory: ./__gh-pages__
         run: |         
-          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref"`
+          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           rm -rf ${TARGET_PATH1}/${BRANCH} || true
           rm -rf ${TARGET_PATH2}/${BRANCH} || true          
           git ls-files | sed -r "s/^${TARGET_PATH1}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH1}/index.txt
@@ -45,7 +45,7 @@ jobs:
       - name: Save gh-pages
         working-directory: ./__gh-pages__
         run: |
-          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref"`
+          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           git add .
           git commit -m "delete ${BRANCH}" || true
           git push origin gh-pages || true
