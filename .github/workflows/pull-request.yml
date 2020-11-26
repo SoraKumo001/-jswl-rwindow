@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: env
       - name: Cache modules(yarn.lock)
         id: cache
         uses: actions/cache@v2
@@ -51,7 +52,7 @@ jobs:
           TARGET_PATH: captures
         run: |
           TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
+          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           BRANCH=[PR]${TARGET}--${BRANCH}
           mkdir __gh-pages__
           cd __gh-pages__
@@ -72,7 +73,7 @@ jobs:
         working-directory: ./__gh-pages__
         run: |
           TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
+          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           BRANCH=[PR]${TARGET}--${BRANCH}
           rm -rf ${TARGET_PATH}/${BRANCH} || true
           mkdir -p ${TARGET_PATH}/${BRANCH}
@@ -83,7 +84,7 @@ jobs:
         working-directory: ./__gh-pages__
         run: |
           TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
+          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           BRANCH=[PR]${TARGET}--${BRANCH}
           git add .
           git commit -m "Create Snapshot($BRANCH)" || true
