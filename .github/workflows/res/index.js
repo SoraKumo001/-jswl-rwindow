@@ -1,4 +1,4 @@
-const getStories = async () => {
+const getStoryList = async () => {
   const res = await fetch("./stories/index.txt?" + Date.now()).catch(() => null);
   return res && (await res.text()).split("\n").filter((v) => v);
 };
@@ -15,7 +15,7 @@ const getImages = async (story, prefix) => {
     prefix,
   };
 };
-const getSnapshots = async () =>
+const getSnapshotList = async () =>
   Promise.all(
     (await getCaptures())?.map(async (story) => [
       story,
@@ -47,10 +47,10 @@ const imageArea = (images, cell, story, prefix) => {
     };
   }
 };
-
-const images = getSnapshots();
+const storyList = getStoryList();
+const snapshotList = getSnapshotList();
 const stories = () => {
-  images.then((images) => {
+  Promise.all([snapshotList, storyList]).then(([images, stories]) => {
     images.sort((a, b) => (a[0] === "master" ? -1 : a[0] < b[0] ? -1 : 1));
     const master = images.find((image) => image[0] === "master");
     images.forEach((image) => {
@@ -78,9 +78,13 @@ const stories = () => {
       imageArea(delImages, cellDel, master?.[0], master?.[1][0].prefix);
 
       const cellStory = table.insertRow().insertCell();
-      cellStory.innerHTML = `<a class="link" href='./stories/${image[0]}/?${Date.now()}'+>${
-        image[0]
-      }</a>`;
+
+      cellStory.innerHTML = stories.includes(image[0])
+        ? `<a class="link" target="_blank" href='./stories/${image[0]}/?${Date.now()}'+>${
+            image[0]
+          }</a>`
+        : `<div class="link">${image[0]}</div>`;
+
       cellStory.colSpan = 4;
     });
   });
