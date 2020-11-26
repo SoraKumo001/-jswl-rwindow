@@ -1,12 +1,12 @@
 name: Delete gh-pages
 on:
   delete:
-    branches-ignore: ['gh-pages']
+    branches-ignore: ["gh-pages"]
 jobs:
-  Test:
+  Delete_shapshot:
     runs-on: ubuntu-latest
     steps:
-      - name: Git init 
+      - name: Git init
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           TARGET_PATH1: captures
@@ -25,13 +25,13 @@ jobs:
           echo /${TARGET_PATH2}/${BRANCH} >> .git/info/sparse-checkout
           echo /${TARGET_PATH2}/index.txt >> .git/info/sparse-checkout
           git pull origin gh-pages || true
-          git checkout -b gh-pages      
-      - name: Delete gh-pages 
+          git checkout -b gh-pages
+      - name: Delete gh-pages
         env:
           TARGET_PATH1: captures
           TARGET_PATH2: stories
         working-directory: ./__gh-pages__
-        run: |         
+        run: |
           BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           rm -rf ${TARGET_PATH1}/${BRANCH} || true
           rm -rf ${TARGET_PATH2}/${BRANCH} || true          

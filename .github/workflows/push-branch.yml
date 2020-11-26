@@ -1,4 +1,4 @@
-name: Frontend
+name: Push branch
 on:
   push:
 jobs:
@@ -57,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           WORK_DIR: temp
           TARGET_PATH: captures/master
-        run: |          
+        run: |
           mkdir -p ${WORK_DIR}/${TARGET_PATH}
           cd ${WORK_DIR}
           git init
@@ -74,20 +74,20 @@ jobs:
       - name: Jest(!Master)
         if: ${{github.ref != 'refs/heads/master'}}
         run: |
-            yarn test || (mv __image_diff__ __image_diff2__ || true; yarn test:update)
-            mv __image_diff2__ __image_diff__ || true
-            cd __image_snapshots__ && ls | grep -i \.png$ > index.txt
-            cd __image_diff__ && ls | grep -i \.png$ > index.txt || true
+          yarn test || (mv __image_diff__ __image_diff2__ || true; yarn test:update)
+          mv __image_diff2__ __image_diff__ || true
+          cd __image_snapshots__ && ls | grep -i \.png$ > index.txt
+          cd __image_diff__ && ls | grep -i \.png$ > index.txt || true
       - name: Jest(Master)
         if: ${{github.ref == 'refs/heads/master'}}
         run: |
-            yarn test:update
-            cd __image_snapshots__ && ls | grep -i \.png$ > index.txt
-      - name: Git init 
+          yarn test:update
+          cd __image_snapshots__ && ls | grep -i \.png$ > index.txt
+      - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           TARGET_PATH: captures
-        run: |          
+        run: |
           BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
           mkdir __gh-pages__
           cd __gh-pages__
@@ -99,7 +99,7 @@ jobs:
           echo /${TARGET_PATH}/${BRANCH} > .git/info/sparse-checkout
           echo /${TARGET_PATH}/index.txt >> .git/info/sparse-checkout  
           git pull origin gh-pages || true
-          git checkout -b gh-pages        
+          git checkout -b gh-pages
       - name: Create gh-pages
         env:
           TARGET_PATH: captures
@@ -137,11 +137,11 @@ jobs:
         run: yarn
       - name: Storybook
         run: yarn storybook:build
-      - name: Git init # cloneせずに、最小限のファイルのみを管理対象とする
+      - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           TARGET_PATH: stories
-        run: |          
+        run: |
           BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'`
           mkdir -p __gh-pages__/${TARGET_PATH}
           cd __gh-pages__
@@ -154,7 +154,7 @@ jobs:
           echo /${TARGET_PATH}/index.txt >> .git/info/sparse-checkout
           ls ../.github/workflows/res | sed -r 's/(.*?)/\/\1/g' >> .git/info/sparse-checkout
           git pull origin gh-pages || true
-          git checkout -b gh-pages        
+          git checkout -b gh-pages
       - name: Create gh-pages
         env:
           TARGET_PATH: stories
