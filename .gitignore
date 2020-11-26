@@ -1,0 +1,8 @@
+.vscode
+node_modules
+dist
+storybook-static
+__image_snapshots__
+__image_diff__
+!captures/*
+*.log

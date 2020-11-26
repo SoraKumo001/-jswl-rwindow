@@ -1,0 +1,19 @@
+import React from "react";
+import { {{{NAME}}} } from ".";
+import { Decorator, Viewport } from "../../storybook";
+
+export default {
+  title: "Components/{{{NAME}}}",
+  decorators: [Decorator],
+  component: {{{NAME}}},
+};
+
+export const PC = () => (
+  <>
+    <{{{NAME}}}></{{{NAME}}}>
+  </>
+);
+PC.parameters = Viewport("PC");
+
+export const SP = PC.bind({});
+SP.parameters = Viewport("SP");
