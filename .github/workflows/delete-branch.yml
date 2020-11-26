@@ -30,6 +30,7 @@ jobs:
         env:
           TARGET_PATH1: captures
           TARGET_PATH2: stories
+        working-directory: ./__gh-pages__
         run: |         
           BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref"`
           rm -rf ${TARGET_PATH1}/${BRANCH} || true
