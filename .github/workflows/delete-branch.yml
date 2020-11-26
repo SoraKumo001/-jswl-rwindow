@@ -3,7 +3,7 @@ on:
   delete:
     branches-ignore: ["gh-pages"]
 jobs:
-  Delete_shapshot:
+  Delete_snapshot:
     runs-on: ubuntu-latest
     steps:
       - name: Git init
