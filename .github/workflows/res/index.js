@@ -19,7 +19,7 @@ const getSnapshots = async () =>
   Promise.all(
     (await getCaptures())?.map(async (story) => [
       story,
-      await Promise.all(["image_snapshots", "diff_output"].map((name) => getImages(story, name))),
+      await Promise.all(["image_snapshots", "image_diff"].map((name) => getImages(story, name))),
     ])
   );
 
@@ -62,8 +62,8 @@ const stories = () => {
       const row = table.insertRow();
       row.className = "story";
       for (let i = 0; i < 2; i++) {
-        const cellImage = row.insertCell();
-        imageArea(image[1][i].images, cellImage, image[0], image[1][i].prefix);
+        const cell = row.insertCell();
+        imageArea(image[1][i].images, cell, image[0], image[1][i].prefix);
       }
       const addImages = !master
         ? []
