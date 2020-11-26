@@ -6,7 +6,6 @@ jobs:
   Close:
     runs-on: ubuntu-latest
     steps:
-      - run: env
       - name: Git init
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
