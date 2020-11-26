@@ -35,7 +35,7 @@ jobs:
           echo /${TARGET_PATH}/ > .git/info/sparse-checkout    
           git pull origin gh-pages || true
           git checkout -b gh-pages   
-          mv -f ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../SRC_PATH || true
+          mv -f ${TARGET_PATH}/master/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../${SRC_PATH} || true
       - name: Storybook
         run: yarn storybook:build
       - name: Jest

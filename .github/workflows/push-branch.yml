@@ -69,13 +69,13 @@ jobs:
           echo /${TARGET_PATH}/master > .git/info/sparse-checkout    
           git pull origin gh-pages || true
           git checkout -b gh-pages   
-          mv -f ${TARGET_PATH}/master/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../SRC_PATH || true
-      - name: Setup tmate session
-        env:
-          WORK_DIR: temp
-          TARGET_PATH: captures
-          SRC_PATH: __image_snapshots__
-        uses: mxschmitt/action-tmate@v3
+          mv -f ${TARGET_PATH}/master/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../${SRC_PATH} || true
+      # - name: Setup tmate session
+      #   env:
+      #     WORK_DIR: temp
+      #     TARGET_PATH: captures
+      #     SRC_PATH: __image_snapshots__
+      #   uses: mxschmitt/action-tmate@v3
       - name: Storybook
         run: yarn storybook:build
       - name: Jest(!Master)
