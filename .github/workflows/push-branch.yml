@@ -56,7 +56,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           WORK_DIR: temp
-          TARGET_PATH: captures/master
+          TARGET_PATH: captures
           SRC_PATH: __image_snapshots__
         run: |
           mkdir -p ${WORK_DIR}/${TARGET_PATH}
@@ -66,11 +66,10 @@ jobs:
           git config --global user.email ${GITHUB_ACTOR}@git
           git config core.sparsecheckout true
           git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
-          echo /${TARGET_PATH}/ > .git/info/sparse-checkout    
+          echo /${TARGET_PATH}/master > .git/info/sparse-checkout    
           git pull origin gh-pages || true
           git checkout -b gh-pages   
-          mv -f ${TARGET_PATH}/* .. || true
-          mv -f ${TARGET_PATH}/${BRANCH}`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../SRC_PATH || true
+          mv -f ${TARGET_PATH}/master/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` ../SRC_PATH || true
       - name: Storybook
         run: yarn storybook:build
       - name: Jest(!Master)
