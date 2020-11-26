@@ -41,7 +41,7 @@ jobs:
       #   env:
       #     TARGET_PATH1: captures
       #     TARGET_PATH2: stories
-        uses: mxschmitt/action-tmate@v3
+      #   uses: mxschmitt/action-tmate@v3
       - name: Save gh-pages
         working-directory: ./__gh-pages__
         run: |
