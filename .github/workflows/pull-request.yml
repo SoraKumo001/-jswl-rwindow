@@ -89,3 +89,5 @@ jobs:
           git add .
           git commit -m "Create Snapshot($BRANCH)" || true
           git push origin gh-pages || true
+      - name: Write comment
+        run: node .github/scripts/comment.js
