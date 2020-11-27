@@ -93,3 +93,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
         run: node .github/workflows/scripts/comment.js
+      - name: Setup tmate session
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+        uses: mxschmitt/action-tmate@v3
