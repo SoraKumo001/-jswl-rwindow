@@ -53,7 +53,7 @@ jobs:
         run: |
           TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
           BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
-          BRANCH=${TARGET}--${BRANCH}
+          BRANCH=${BRANCH}--${TARGET}
           mkdir __gh-pages__
           cd __gh-pages__
           git init
@@ -74,7 +74,7 @@ jobs:
         run: |
           TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
           BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
-          BRANCH=${TARGET}--${BRANCH}
+          BRANCH=${BRANCH}--${TARGET}
           rm -rf ${TARGET_PATH}/${BRANCH} || true
           mkdir -p ${TARGET_PATH}/${BRANCH}
           cp -r ../${SRC_PATH} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` || true
@@ -85,7 +85,7 @@ jobs:
         run: |
           TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
           BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
-          BRANCH=${TARGET}--${BRANCH}
+          BRANCH=${BRANCH}--${TARGET}
           git add .
           git commit -m "Create Snapshot($BRANCH)" || true
           git push origin gh-pages || true
