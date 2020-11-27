@@ -77,7 +77,7 @@ jobs:
           BRANCH=${TARGET}--${BRANCH}
           rm -rf ${TARGET_PATH}/${BRANCH} || true
           mkdir -p ${TARGET_PATH}/${BRANCH}
-          mv ../${SRC_PATH} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` || true
+          cp -r ../${SRC_PATH} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH} | sed -r "s/__(.*)__/\1/"` || true
           mv ../${SRC_PATH2} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH2} | sed -r "s/__(.*)__/\1/"` || true
           git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
       - name: Save gh-pages

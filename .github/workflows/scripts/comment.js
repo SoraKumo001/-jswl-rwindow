@@ -24,7 +24,7 @@ Promise.all([
   const delList = getDiffList(targetList, srcList);
 
   const body = `
-[${url}](${url})  
+<${url}>  
 
 Images: ${srcList.length}  
 Faild: ${dffList.length}  
