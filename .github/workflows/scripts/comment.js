@@ -12,14 +12,14 @@ const readFileList = (pathName) =>
     .then((value) => value.split("\n").filter((v) => v))
     .catch(() => []);
 
-const getDiffList = (targetList, srcList) => targetList.filter((name) => !srcList.includes(name));
+const getDiffList = (targetList, srcList) =>
+  targetList.filter((name) => !srcList.includes(name));
 
 Promise.all([
   readFileList("temp/index.txt"),
   readFileList("__image_snapshots__/index.txt"),
   readFileList("__image_diff__/index.txt"),
 ]).then(([targetList, srcList, dffList]) => {
-  console.log(targetList, srcList, dffList);
   const addList = getDiffList(srcList, targetList);
   const delList = getDiffList(targetList, srcList);
 
@@ -41,7 +41,7 @@ Delete: ${delList.length}
       },
       json: { body },
     },
-    function (_error, _response, body) {
+    (_error, _response, body) => {
       console.log(body);
     }
   );
