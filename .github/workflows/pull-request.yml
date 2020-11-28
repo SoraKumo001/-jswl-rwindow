@@ -88,7 +88,9 @@ jobs:
           BRANCH=${BRANCH}--${TARGET}
           git add .
           git commit -m "Create Snapshot($BRANCH)" || true
-          git push origin gh-pages || true
+          for i in `seq 5` ; do
+            (git push origin gh-pages && break) || sleep 5
+          done
       - name: Write comment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}

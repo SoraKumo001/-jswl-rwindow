@@ -120,7 +120,9 @@ jobs:
           BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///'`
           git add .
           git commit -m "Create Snapshot($BRANCH)" || true
-          git push origin gh-pages || true
+          for i in `seq 5` ; do
+            (git push origin gh-pages && break) || sleep 5
+          done
   Storybook:
     name: Storybook
     runs-on: ubuntu-latest
@@ -172,4 +174,6 @@ jobs:
           cd __gh-pages__
           git add .
           git commit -m "Create Story($BRANCH)" || true
-          git push origin gh-pages || true
+          for i in `seq 5` ; do
+            (git push origin gh-pages && break) || sleep 5
+          done

@@ -49,4 +49,6 @@ jobs:
           BRANCH=${BRANCH}--${TARGET}
           git add .
           git commit -m "delete ${BRANCH}" || true
-          git push origin gh-pages || true
+          for i in `seq 5` ; do
+            (git push origin gh-pages && break) || sleep 5
+          done
