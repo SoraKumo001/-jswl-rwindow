@@ -142,7 +142,7 @@ export class WindowManager {
     return tag;
   }
   public static init() {
-    if (window && !this.initFlag) {
+    if (typeof window !== "undefined" && !this.initFlag) {
       this.initFlag = true;
       window.addEventListener("mouseup", mouseUp, false);
       window.addEventListener("touchend", mouseUp, { passive: false });
