@@ -43,6 +43,4 @@ jobs:
           BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
           git add .
           git commit -m "delete ${BRANCH}" || true
-          for i in `seq 5` ; do
-            (git push origin gh-pages && break) || sleep 5
-          done
+          git push origin gh-pages || (git pull origin gh-pages && git push origin gh-pages)
