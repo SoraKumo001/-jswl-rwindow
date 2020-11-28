@@ -1,5 +1,5 @@
 {
-  "name": "@jswl/rwindow",
+  "name": "@jswl/win",
   "version": "1.0.2",
   "main": "dist/index.js",
   "license": "MIT",

@@ -1,6 +1,5 @@
 import * as path from "path";
 import { StorybookConfig } from "@storybook/core/types";
-import { Configuration } from "webpack";
 
 module.exports = {
   stories: ["../src/**/*.stories.@(tsx)"],
@@ -17,7 +16,7 @@ module.exports = {
     ...options,
     plugins: [],
   }),
-  webpackFinal: async (config: Configuration) => {
+  webpackFinal: async (config) => {
     if (config.resolve)
       config.resolve.modules = [
         ...(config.resolve.modules || []),
