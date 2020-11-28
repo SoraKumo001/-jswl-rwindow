@@ -15,12 +15,12 @@ export const Root = styled.div`
   right: -1px;
   height: 32px;
 
-  background-color: rgba(50, 100, 255, 0.9);
-  color: #eeeeee;
+  background-color: rgba(100, 150, 255, 0.9);
+  color: white;
 
   &.active {
-    background-color: rgba(100, 150, 255, 0.9);
-    color: white;
+    background-color: rgba(50, 100, 255, 0.9);
+    color: #eeeeee;
   }
 
   > .text {

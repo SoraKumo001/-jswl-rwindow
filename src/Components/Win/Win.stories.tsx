@@ -20,5 +20,5 @@ export const PC = () => (
 );
 PC.parameters = Viewport("PC");
 
-export const SP = PC.bind({});
+export const SP = PC.bind(this);
 SP.parameters = Viewport("SP");
