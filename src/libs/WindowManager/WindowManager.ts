@@ -55,7 +55,7 @@ export class WindowManager {
   private static moveNode: HTMLElement | null = null;
   private static pinchiBaseDistance?: number;
   private static initFlag = false;
-  private static nodeType: string;
+  private static nodeType: BorderType | "";
 
   /**
    * マウスとタッチイベントの座標取得処理
@@ -154,7 +154,7 @@ export class WindowManager {
   }
   static setNode(
     node: HTMLElement | null,
-    nodeType: string,
+    nodeType: BorderType | "",
     e: MouseEvent | TouchEvent,
     point: { x: number; y: number },
     size: { width: number; height: number }

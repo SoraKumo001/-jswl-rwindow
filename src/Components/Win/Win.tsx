@@ -164,7 +164,7 @@ export const Win: FC<Props> = ({
       if (moveable !== false || border)
         WindowManager.setNode(
           refWindow.current,
-          border ? className : "",
+          border ? (className as BorderType) : "",
           e.nativeEvent,
           values,
           values
