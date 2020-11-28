@@ -167,14 +167,18 @@ function mouseMove(e: MouseEvent | TouchEvent): void {
       } else {
         const node = WindowManager.moveNode; // 移動中ノード
         const p = WindowManager.getPos(e); // 座標の取得
-        const distance = getDistance(e.touches) - WindowManager.pinchiBaseDistance;
+        const distance =
+          getDistance(e.touches) - WindowManager.pinchiBaseDistance;
         const radian = getRadian(e.touches);
         const params: MovePoint = {
           event: e,
           nodePoint: { x: WindowManager.nodeX, y: WindowManager.nodeY },
           basePoint: { x: WindowManager.baseX, y: WindowManager.baseY },
           nowPoint: { x: p.x, y: p.y },
-          nodeSize: { width: WindowManager.nodeWidth, height: WindowManager.nodeHeight },
+          nodeSize: {
+            width: WindowManager.nodeWidth,
+            height: WindowManager.nodeHeight,
+          },
           distance,
           radian,
         };
@@ -190,7 +194,10 @@ function mouseMove(e: MouseEvent | TouchEvent): void {
         nodePoint: { x: WindowManager.nodeX, y: WindowManager.nodeY },
         basePoint: { x: WindowManager.baseX, y: WindowManager.baseY },
         nowPoint: { x: p.x, y: p.y },
-        nodeSize: { width: WindowManager.nodeWidth, height: WindowManager.nodeHeight },
+        nodeSize: {
+          width: WindowManager.nodeWidth,
+          height: WindowManager.nodeHeight,
+        },
       };
       WindowManager.callEvent(node, "move", params);
       e.preventDefault();
