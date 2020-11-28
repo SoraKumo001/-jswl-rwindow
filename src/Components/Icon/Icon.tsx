@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Root } from "./Icon.style";
+import { Root } from "./Icon.styled";
 
 import Close from "../../Images/close.svg";
 import Max from "../../Images/max.svg";

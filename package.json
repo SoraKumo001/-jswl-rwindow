@@ -1,12 +1,12 @@
 {
-  "name": "@jswl/rwindow",
+  "name": "@jswl/win",
   "version": "1.0.2",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
     "storybook": "start-storybook -p 9001",
     "storybook:build": "build-storybook",
-    "storybook:test": "build-storybook && jest",
+    "storybook:test": "build-storybook && yarn test:update",
     "build": "webpack --config src/webpack.config.js",
     "watch": "webpack --config src/webpack.config.js -w",
     "lint": "eslint --ext .js,.ts,.tsx src",

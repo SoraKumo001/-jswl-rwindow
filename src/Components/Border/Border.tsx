@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Root } from "./Border.style";
+import { Root } from "./Border.styled";
 
 export type BorderType =
   | "top"
