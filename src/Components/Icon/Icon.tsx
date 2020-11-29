@@ -16,6 +16,7 @@ type Props = {
    */
   src: string;
   type?: [IconType] | IconType;
+  onClick?: () => void;
 };
 
 /**
@@ -23,8 +24,15 @@ type Props = {
  *
  * @param {Props} { src }
  */
-export const Icon: FC<Props> = ({ src, type }) => (
-  <Root className={isType(type, "button") ? "button" : undefined} src={src} />
+export const Icon: FC<Props> = ({ src, type, onClick }) => (
+  <Root
+    className={isType(type, "button") ? "button" : undefined}
+    src={src}
+    onClick={(e) => {
+      onClick?.();
+      e.stopPropagation();
+    }}
+  />
 );
 export const Icons = { Close, Max, Min, Normal };
 

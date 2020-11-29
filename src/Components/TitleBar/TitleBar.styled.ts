@@ -9,11 +9,15 @@ export const Root = styled.div`
   border-right: 0.5px solid rgba(0, 0, 0, 0.4);
   border-top: 0.5px solid rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
-  border-radius: 0.8em 0.8em 0 0;
   left: -1px;
   top: -1px;
   right: -1px;
   height: 32px;
+
+  border-radius: 0.8em 0.8em 0 0;
+  &.max {
+    border-radius: 0;
+  }
 
   background-color: rgba(100, 150, 255, 0.9);
   color: white;

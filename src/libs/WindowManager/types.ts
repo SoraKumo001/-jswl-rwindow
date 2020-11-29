@@ -1,3 +1,4 @@
+export type WindowState = "normal" | "max" | "min" | "close";
 export type BorderType =
   | "top"
   | "right"

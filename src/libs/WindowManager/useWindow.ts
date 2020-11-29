@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, Dispatch } from "react";
 import {
   MoveParams,
   MEvent,
@@ -7,7 +7,7 @@ import {
   getPos,
   getRadian,
 } from ".";
-import { BorderType } from "./types";
+import { BorderType, WindowState } from "./types";
 
 type WindowParams = {
   active: boolean;
@@ -15,25 +15,45 @@ type WindowParams = {
   y: number;
   width: number;
   height: number;
+  child: boolean;
+  state: WindowState;
 };
 
-export const useWindow = ({
-  ref,
-  active,
-  x,
-  y,
-  width,
-  height,
-}: WindowParams & { ref: React.RefObject<HTMLElement> }) => {
-  const [params, setParams] = useState<MoveParams & { real: WindowParams }>({
-    node: null,
-    nodePoint: { x, y },
-    nodeSize: { width, height },
-    real: { active, x, y, width, height },
-  });
+export type ActionType = {
+  type: string;
+  payload?: unknown;
+};
+export type WindowDispatch = Dispatch<ActionType>;
+
+type Props = WindowParams & { ref: React.RefObject<HTMLElement> };
+
+export const useWindow = (windowParams: Props | (() => Props)) => {
+  const { ref, active, x, y, width, height, child, state } = useMemo(
+    () => (windowParams instanceof Function ? windowParams() : windowParams),
+    []
+  );
+  const [params, setParams] = useState<MoveParams & { real: WindowParams }>(
+    () => ({
+      node: null,
+      nodePoint: { x, y },
+      nodeSize: { width, height },
+      real: { active, x, y, width, height, child, state },
+    })
+  );
   const [activeWindow, setActiveWindow] = useState(active);
   const refActive = useRef<boolean>(activeWindow);
   refActive.current = activeWindow;
+
+  const dispatch: Dispatch<ActionType> = ({ type, payload }) => {
+    switch (type) {
+      case "state":
+        setParams({
+          ...params,
+          real: { ...params.real, state: payload as WindowState },
+        });
+        break;
+    }
+  };
 
   useEffect(() => {
     if (ref.current) {
@@ -51,9 +71,13 @@ export const useWindow = ({
               .call(parent.childNodes, 0)
               .filter((node) => isWindow(node))
               .sort((a, b) => {
-                const az = a.style.zIndex ? parseInt(a.style.zIndex) : 0;
-                const bz = b.style.zIndex ? parseInt(b.style.zIndex) : 0;
-                return az - bz;
+                if (a.style.position === b.style.position) {
+                  const az = a.style.zIndex ? parseInt(a.style.zIndex) : 0;
+                  const bz = b.style.zIndex ? parseInt(b.style.zIndex) : 0;
+                  return az - bz;
+                } else {
+                  return a.style.position < b.style.position ? -1 : 1;
+                }
               })
               .forEach((node, index) => {
                 node.style.zIndex = index.toString();
@@ -62,6 +86,7 @@ export const useWindow = ({
         }
       };
       ref.current.addEventListener("active", onActive);
+      // setParams({ ...params });
       return () => {
         ref.current?.removeEventListener("active", onActive);
       };
@@ -104,13 +129,17 @@ export const useWindow = ({
 
   // マウスが離された場合に選択をリセット
   const mouseUp = () => {
-    setParams((p) => ({
-      ...p,
-      relativePoint: { x: 0, y: 0 },
-      nodePoint: { x: p.real.x, y: p.real.y },
-      nodeSize: { width: p.real.width, height: p.real.height },
-      node: null,
-    }));
+    setParams((p) =>
+      p.node
+        ? {
+            ...p,
+            relativePoint: { x: 0, y: 0 },
+            nodePoint: { x: p.real.x, y: p.real.y },
+            nodeSize: { width: p.real.width, height: p.real.height },
+            node: null,
+          }
+        : p
+    );
   };
   const onTouchStart = (e: TouchEvent) => {
     setParams((params) => ({ ...params, pinchiBaseDistance: undefined }));
@@ -119,7 +148,7 @@ export const useWindow = ({
   // マウス移動時の処理
   const mouseMove = (e: MouseEvent | TouchEvent) => {
     setParams((params) => {
-      if (params.node) {
+      if (params.node && params.real.state !== "max") {
         e.preventDefault();
         if ("touches" in e && e.touches.length === 2) {
           if (params.distance === undefined) {
@@ -179,6 +208,7 @@ export const useWindow = ({
           ...params,
           relativePoint,
           real: {
+            ...params.real,
             active: refActive.current,
             x,
             y,
@@ -229,8 +259,26 @@ export const useWindow = ({
       removeEventListener("touchstart", onTouchStart);
     };
   }, []);
+  const real = useMemo(() => {
+    const { real } = params;
+    if (real.state === "max") {
+      //座標系リミットチェック
+      const node = ref.current!;
+      if (node) {
+        const parent = node.parentNode as HTMLElement;
+        const width = real.child ? parent.clientWidth : window.innerWidth;
+        const height = real.child ? parent.clientHeight : window.innerHeight;
+        return { ...real, x: 0, y: 0, width, height };
+      }
+    }
+    if (real.state === "min") {
+      return { ...real, height: 32 };
+    }
+    return real;
+  }, [params.real]);
   return {
-    params: { ...params.real, active: refActive.current },
+    params: { ...real, active: refActive.current },
     handleWindow,
+    dispatch,
   };
 };
