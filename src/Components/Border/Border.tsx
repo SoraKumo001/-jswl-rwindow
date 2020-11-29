@@ -1,15 +1,6 @@
 import React, { FC } from "react";
+import { BorderType } from "../../libs/WindowManager";
 import { Root } from "./Border.styled";
-
-export type BorderType =
-  | "top"
-  | "right"
-  | "bottom"
-  | "left"
-  | "leftTop"
-  | "rightTop"
-  | "rightBottom"
-  | "leftBottom";
 
 export const Borders: BorderType[] = [
   "top",

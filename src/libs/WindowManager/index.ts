@@ -1,1 +1,3 @@
-export * from "./WindowManager";
+export * from "./functions";
+export * from "./useWindow";
+export * from "./types";
