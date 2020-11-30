@@ -18,6 +18,7 @@ const beforeScreenshot: ImageSnapshotConfig["beforeScreenshot"] = async (
       height: parseInt(defaultViewport.styles.height, 10),
     });
   }
+  return new Promise((resolve) => setTimeout(resolve, 500));
 };
 
 const getMatchOptions = (): MatchImageSnapshotOptions => {
