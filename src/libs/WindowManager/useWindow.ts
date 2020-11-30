@@ -37,6 +37,7 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
       node: null,
       nodePoint: { x, y },
       nodeSize: { width, height },
+      state,
       real: { active, x, y, width, height, child, state },
     })
   );
@@ -44,13 +45,59 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
   const refActive = useRef<boolean>(activeWindow);
   refActive.current = activeWindow;
 
+  const setWindowState = (state: WindowState) => {
+    const node = ref?.current;
+    if (!node) return;
+    switch (state) {
+      case "max":
+        setParams({
+          ...params,
+          state,
+          real: { ...params.real, state },
+        });
+        node.style.animation = "Max 0.5s ease 0s 1 forwards";
+        break;
+      case "min":
+        setParams({
+          ...params,
+          state,
+          // real: { ...params.real, state },
+        });
+        node.style.animation = "MinRoot 0.3s ease 0s 1 forwards";
+        (node.lastChild as HTMLElement).style.animation =
+          "MinClient 0.3s ease 0s 1 alternate forwards";
+        break;
+      case "close":
+        setParams({
+          ...params,
+          state,
+        });
+        node.style.animation = "Hide 0.5s ease 0s forwards";
+        break;
+      case "normal":
+        setParams({
+          ...params,
+          state,
+          real: { ...params.real, state },
+        });
+        if (params.state === "max")
+          node.style.animation = "Restore 0.5s ease 0s forwards";
+        else if (params.state === "min") {
+          node.style.animation =
+            "MinRestoreRoot 0.5s ease 0s 1 alternate forwards";
+          (node.lastChild as HTMLElement).style.animation =
+            "MinRestoreClient 0.1s ease 0s 1 alternate forwards";
+        } else {
+          node.style.animation = "Show 0.5s ease 0s none";
+        }
+        break;
+    }
+  };
+
   const dispatch: Dispatch<ActionType> = ({ type, payload }) => {
     switch (type) {
       case "state":
-        setParams({
-          ...params,
-          real: { ...params.real, state: payload as WindowState },
-        });
+        setWindowState(payload as WindowState);
         break;
     }
   };
@@ -58,6 +105,8 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
   useEffect(() => {
     if (ref.current) {
       ref.current.dataset["__symbol"] = "Window";
+      if (params.state === "hide") setWindowState("normal");
+
       const onActive = (e: MEvent) => {
         const active = e.params === true;
         setActiveWindow(active);
@@ -85,10 +134,15 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
           }
         }
       };
+      const onAnimationEnd = () => {
+        setParams((p) => ({ ...p, real: { ...p.real, state: p.state } }));
+      };
       ref.current.addEventListener("active", onActive);
+      ref.current.addEventListener("animationend", onAnimationEnd);
       // setParams({ ...params });
       return () => {
         ref.current?.removeEventListener("active", onActive);
+        ref.current?.removeEventListener("animationend", onAnimationEnd);
       };
     }
   }, [ref.current]);
