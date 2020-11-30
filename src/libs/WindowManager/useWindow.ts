@@ -105,8 +105,7 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
   useEffect(() => {
     if (ref.current) {
       ref.current.dataset["__symbol"] = "Window";
-      if(params.state === "hide")
-        setWindowState("normal");
+      if (params.state === "hide") setWindowState("normal");
 
       const onActive = (e: MEvent) => {
         const active = e.params === true;
