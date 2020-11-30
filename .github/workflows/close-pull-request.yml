@@ -41,6 +41,10 @@ jobs:
           TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
           BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
           BRANCH=${BRANCH}--${TARGET}
-          git add .
-          git commit -m "delete ${BRANCH}" || true
-          git push origin gh-pages || (git pull origin gh-pages && git push origin gh-pages)
+          for i in `seq 2` ; do
+            git add .
+            git commit -m "delete ${BRANCH}" || true
+            (git push origin gh-pages && break) || 
+              (git pull origin gh-pages && git push origin gh-pages && break) || 
+              (git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt)
+          done
