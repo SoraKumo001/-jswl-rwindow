@@ -40,7 +40,7 @@ export const Win: FC<Props> = ({
     width: width ?? 640,
     height: height ?? 480,
     child: child === true,
-    state: state ?? "normal",
+    state: state ?? "hide",
   }));
   return params.state === "close" ? null : (
     <Root

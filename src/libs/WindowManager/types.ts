@@ -1,4 +1,4 @@
-export type WindowState = "normal" | "max" | "min" | "close";
+export type WindowState = "normal" | "max" | "min" | "close" | "hide";
 export type BorderType =
   | "top"
   | "right"
@@ -48,11 +48,13 @@ export type MoveParams =
       nodeSize: Size;
       distance?: number;
       radian?: number;
+      state: WindowState;
     }
   | {
       node: null;
       nodePoint: Point;
       nodeSize: Size;
+      state: WindowState;
     };
 export interface MEvent extends Event {
   params?: unknown;
