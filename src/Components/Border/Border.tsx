@@ -1,15 +1,6 @@
 import React, { FC } from "react";
-import { Root } from "./Border.style";
-
-export type BorderType =
-  | "top"
-  | "right"
-  | "bottom"
-  | "left"
-  | "leftTop"
-  | "rightTop"
-  | "rightBottom"
-  | "leftBottom";
+import { BorderType } from "../../libs/WindowManager";
+import { Root } from "./Border.styled";
 
 export const Borders: BorderType[] = [
   "top",
@@ -24,6 +15,11 @@ export const Borders: BorderType[] = [
 
 type Props = {
   borderSize?: number;
+  onMouse?: (
+    e:
+      | React.MouseEvent<HTMLDivElement, MouseEvent>
+      | React.TouchEvent<HTMLDivElement>
+  ) => void;
 };
 
 /**
@@ -31,12 +27,17 @@ type Props = {
  *
  * @param {Props} { }
  */
-export const Border: FC<Props> = ({ borderSize }) => {
+export const Border: FC<Props> = ({ borderSize, onMouse }) => {
   return (
     <>
       <Root size={borderSize || 8}>
         {Borders.map((border) => (
-          <div key={border} className={border} />
+          <div
+            key={border}
+            className={border}
+            onMouseDown={onMouse}
+            onTouchStart={onMouse}
+          />
         ))}
       </Root>
     </>

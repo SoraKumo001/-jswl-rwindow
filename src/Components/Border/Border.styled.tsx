@@ -1,9 +1,11 @@
 import styled from "styled-components";
 
 export const Root = styled.div<{ size: number }>`
+  position: absolute;
   width: 100%;
   height: 100%;
   user-select: none;
+  pointer-events: none;
   &:active div {
     background-color: rgba(0, 0, 0, 0.08);
   }
@@ -11,6 +13,7 @@ export const Root = styled.div<{ size: number }>`
   div {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.03);
+    pointer-events: all;
   }
   .top {
     cursor: n-resize;

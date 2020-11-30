@@ -1,16 +1,16 @@
 import React from "react";
-import { {{{NAME}}} } from ".";
+import { Client } from ".";
 import { Decorator, Viewport } from "../../storybook";
 
 export default {
-  title: "Components/{{{NAME}}}",
+  title: "Components/Client",
   decorators: [Decorator],
-  component: {{{NAME}}},
+  component: Client,
 };
 
 export const PC = () => (
   <>
-    <{{{NAME}}}></{{{NAME}}}>
+    <Client>コンテンツ</Client>
   </>
 );
 PC.parameters = Viewport("PC");

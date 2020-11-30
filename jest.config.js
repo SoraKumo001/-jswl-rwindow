@@ -7,7 +7,7 @@ module.exports = {
   },
   moduleFileExtensions: ["js", "json", "ts", "tsx"],
   rootDir: ".",
-  roots: ["<rootDir>/src"],
+  roots: ["<rootDir>/test"],
   testEnvironment: "node",
   testRegex: ".test.[jt]s$",
   transform: {

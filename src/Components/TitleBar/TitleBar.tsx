@@ -1,8 +1,7 @@
 import React, { FC } from "react";
+import { WindowDispatch, WindowState } from "../../libs/WindowManager";
 import { Icon, Icons } from "../Icon";
-import { Root } from "./TitleBar.style";
-
-type State = "max" | "min" | undefined;
+import { Root } from "./TitleBar.styled";
 
 type Props = {
   /**
@@ -11,7 +10,13 @@ type Props = {
    * @type {boolean}
    */
   active?: boolean;
-  state?: State;
+  state?: WindowState;
+  dispatch?: WindowDispatch;
+  onMouse?: (
+    e:
+      | React.MouseEvent<HTMLDivElement, MouseEvent>
+      | React.TouchEvent<HTMLDivElement>
+  ) => void;
 };
 
 /**
@@ -19,14 +24,46 @@ type Props = {
  *
  * @param {Props} { active, children }
  */
-export const TitleBar: FC<Props> = ({ active, children, state }) => {
+export const TitleBar: FC<Props> = ({
+  active,
+  children,
+  state,
+  onMouse,
+  dispatch,
+}) => {
   return (
-    <Root className={active ? "active" : undefined}>
+    <Root
+      className={[active && "active", state].join(" ")}
+      onMouseDown={onMouse}
+      onTouchStart={onMouse}
+    >
       <div className="text">{children}</div>
-      {state !== "min" && <Icon type="button" src={Icons.Min} />}
-      {state && <Icon type="button" src={Icons.Normal} />}
-      {state !== "max" && <Icon type="button" src={Icons.Max} />}
-      <Icon type="button" src={Icons.Close} />
+      {state !== "min" && (
+        <Icon
+          type="button"
+          src={Icons.Min}
+          onClick={() => dispatch?.({ type: "state", payload: "min" })}
+        />
+      )}
+      {state && state !== "normal" && (
+        <Icon
+          type="button"
+          src={Icons.Normal}
+          onClick={() => dispatch?.({ type: "state", payload: "normal" })}
+        />
+      )}
+      {state !== "max" && (
+        <Icon
+          type="button"
+          src={Icons.Max}
+          onClick={() => dispatch?.({ type: "state", payload: "max" })}
+        />
+      )}
+      <Icon
+        type="button"
+        src={Icons.Close}
+        onClick={() => dispatch?.({ type: "state", payload: "close" })}
+      />
     </Root>
   );
 };
