@@ -8,7 +8,7 @@ export default {
   component: Win,
 };
 
-export const PC = () => (
+export const Normal = () => (
   <>
     <Win title="Top Window1" x={10} y={10}>
       コンテンツ
@@ -24,7 +24,7 @@ export const PC = () => (
       </Win>
       <Win
         title="Child Window(Overlap)"
-        x={150}
+        x={160}
         y={250}
         width={400}
         height={100}
@@ -37,7 +37,3 @@ export const PC = () => (
     </Win>
   </>
 );
-PC.parameters = Viewport("PC");
-
-export const SP = PC.bind(this);
-SP.parameters = Viewport("SP");

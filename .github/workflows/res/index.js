@@ -7,42 +7,35 @@ const getSearchParams = () =>
   );
 
 const getBranches = async () => {
-  const res = await fetch("./captures/index.txt?" + Date.now()).catch(
-    () => null
-  );
+  const res = await fetch("./captures/index.txt?" + Date.now()).catch(() => null);
   return res && (await res.text()).split("\n").filter((v) => v);
 };
-const getImages = async (story, prefix) => {
-  const res = await fetch(
-    `./captures/${story}/${prefix}/index.txt?` + Date.now()
-  ).catch(() => null);
-  return {
-    images:
-      res &&
-      (await res.text()).split("\n").filter((v) => v && /\.png$/.test(v)),
-    prefix,
-  };
-};
+const getImages = async (story) => [
+  story,
+  await fetch(`./captures/${story}/image_diff/index.json?` + Date.now())
+    .then((e) => e.json())
+    .catch(() => null),
+];
+
 const getSnapshotList = async () =>
-  Promise.all(
-    (await getBranches())?.map(async (story) => [
-      story,
-      await Promise.all(
-        ["image_snapshots", "image_diff"].map((name) => getImages(story, name))
-      ),
-    ])
-  );
+  Promise.all((await getBranches())?.map((story) => getImages(story)));
 
 const snapshotList = getSnapshotList();
 const stories = () => {
   snapshotList.then((snapshots) => {
+    console.log(snapshots);
     const headers = ["Img", "Diff", "Add", "Del"];
     const images = snapshots
       .map((image) => [
         image[0].split("--")[0],
         {
           target: image[0].split("--")[1],
-          images: [image[1][0].images, image[1][1].images, [], []],
+          images: [
+            image[1]?.actualItems || [],
+            image[1]?.diffItems || [],
+            image[1]?.newItems || [],
+            image[1]?.deletedItems || [],
+          ],
         },
       ])
       .sort((a, b) => (a[0] === "master" ? -1 : a[0] < b[0] ? -1 : 1));
@@ -64,9 +57,9 @@ const stories = () => {
         title.innerText = file;
         box.appendChild(title);
         const img = document.createElement("img");
-        img.src = `./captures/${
-          index !== 3 ? branch : storyInfo.target || "master"
-        }/${index !== 1 ? "image_snapshots" : "image_diff"}/${file}`;
+        img.src = `./captures/${index !== 3 ? branch : storyInfo.target || "master"}/${
+          index !== 1 ? "screenshots" : "image_diff"
+        }/${file}`;
         img.onclick = () => {
           open(img.src, "_blank");
         };
@@ -77,21 +70,15 @@ const stories = () => {
           target ? `=${target}` : ""
         }] tr:nth-of-type(2) td:nth-of-type(${index + 1})`
       );
-      document
-        .querySelectorAll("table .select")
-        .forEach((node) => node.classList.remove("select"));
+      document.querySelectorAll("table .select").forEach((node) => node.classList.remove("select"));
       if (cell) cell.classList.add("select");
     };
     images.forEach((story) => {
       const srcInfo = story[1];
       const targetInfo = imagesHash[srcInfo.target || "master"];
       if (targetInfo) {
-        srcInfo.images[2] = srcInfo.images[0].filter(
-          (i) => !targetInfo.images[0].includes(i)
-        );
-        srcInfo.images[3] = targetInfo.images[0].filter(
-          (i) => !srcInfo.images[0].includes(i)
-        );
+        srcInfo.images[2] = srcInfo.images[0].filter((i) => !targetInfo.images[0].includes(i));
+        srcInfo.images[3] = targetInfo.images[0].filter((i) => !srcInfo.images[0].includes(i));
       }
     });
 
