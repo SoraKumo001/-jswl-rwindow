@@ -67,8 +67,7 @@ jobs:
           git config --global user.email ${GITHUB_ACTOR}@git
           git config core.sparsecheckout true
           git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
-          echo /${TARGET_PATH}/index.txt > .git/info/sparse-checkout
-          echo /${TARGET_PATH}/${BRANCH} >> .git/info/sparse-checkout
+          echo /${TARGET_PATH}/${BRANCH} > .git/info/sparse-checkout
           git pull origin gh-pages || true
           git checkout -b gh-pages   
           mv -f ${TARGET_PATH}/${BRANCH}/${SRC_PATH} .. || true
@@ -92,7 +91,8 @@ jobs:
           git config --global user.email ${GITHUB_ACTOR}@git
           git config core.sparsecheckout true
           git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
-          echo /${TARGET_PATH}/${BRANCH} > .git/info/sparse-checkout
+          echo /${TARGET_PATH}/index.txt > .git/info/sparse-checkout
+          echo /${TARGET_PATH}/${BRANCH} >> .git/info/sparse-checkout
           git pull origin gh-pages || true
           git checkout -b gh-pages
       - name: Create gh-pages
