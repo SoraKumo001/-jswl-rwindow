@@ -31,4 +31,3 @@ export const Normal = () => (
     <TitleBar state="min">最小化</TitleBar>
   </>
 );
-

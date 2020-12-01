@@ -59,4 +59,3 @@ export const Normal = () => (
     </table>
   </Root>
 );
-
