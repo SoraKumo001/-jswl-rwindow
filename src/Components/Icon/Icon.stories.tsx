@@ -32,7 +32,7 @@ const Root = styled.div`
   }
 `;
 
-export const PC = () => (
+export const Normal = () => (
   <Root>
     <div>Normal</div>
     <table className="normal">
@@ -59,7 +59,4 @@ export const PC = () => (
     </table>
   </Root>
 );
-PC.parameters = Viewport("PC");
 
-export const SP = PC.bind(this);
-SP.parameters = Viewport("SP");

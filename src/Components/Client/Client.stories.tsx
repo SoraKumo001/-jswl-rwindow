@@ -8,12 +8,8 @@ export default {
   component: Client,
 };
 
-export const PC = () => (
+export const Normal = () => (
   <>
     <Client>コンテンツ</Client>
   </>
 );
-PC.parameters = Viewport("PC");
-
-export const SP = PC.bind(this);
-SP.parameters = Viewport("SP");

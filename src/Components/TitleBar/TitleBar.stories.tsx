@@ -8,7 +8,7 @@ export default {
   component: TitleBar,
 };
 
-export const PC = () => (
+export const Normal = () => (
   <>
     <div>Active</div>
     <TitleBar active>
@@ -31,7 +31,4 @@ export const PC = () => (
     <TitleBar state="min">最小化</TitleBar>
   </>
 );
-PC.parameters = Viewport("PC");
 
-export const SP = PC.bind(this);
-SP.parameters = Viewport("SP");

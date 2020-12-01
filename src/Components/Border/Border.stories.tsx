@@ -18,7 +18,7 @@ const Box = styled.div`
   background: greenyellow;
 `;
 
-export const PC = () => (
+export const Normal = () => (
   <>
     <Box>
       <Border borderSize={8} />
@@ -28,7 +28,3 @@ export const PC = () => (
     </Box>
   </>
 );
-PC.parameters = Viewport("PC");
-
-export const SP = PC.bind(this);
-SP.parameters = Viewport("SP");
