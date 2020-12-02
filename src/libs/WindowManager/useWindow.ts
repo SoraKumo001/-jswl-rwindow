@@ -27,9 +27,6 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
       real: { active, x, y, width, height, child, state },
     })
   );
-  const [activeWindow, setActiveWindow] = useState(active);
-  const refActive = useRef<boolean>(activeWindow);
-  refActive.current = activeWindow;
 
   const setWindowState = (state: WindowState) => {
     setParams((params) => ({
@@ -83,38 +80,40 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
         break;
     }
   }, [params.state]);
-  
+
   useEffect(() => {
     if (ref.current) {
       ref.current.dataset["__symbol"] = "Window";
       if (params.state === "hide") setWindowState("normal");
 
       const onActive = (e: MEvent) => {
-        const active = e.params === true;
-        setActiveWindow(active);
-        const node = ref.current!;
-        if (active) {
-          const parent = node.parentNode;
-          if (parent) {
-            node.style.zIndex = "99999";
+        setParams((params) => {
+          const active = e.params === true;
+          const node = ref.current!;
+          if (active) {
+            const parent = node.parentNode;
+            if (parent) {
+              node.style.zIndex = "99999";
 
-            Array.prototype.slice
-              .call(parent.childNodes, 0)
-              .filter((node) => isWindow(node))
-              .sort((a, b) => {
-                if (a.style.position === b.style.position) {
-                  const az = a.style.zIndex ? parseInt(a.style.zIndex) : 0;
-                  const bz = b.style.zIndex ? parseInt(b.style.zIndex) : 0;
-                  return az - bz;
-                } else {
-                  return a.style.position < b.style.position ? -1 : 1;
-                }
-              })
-              .forEach((node, index) => {
-                node.style.zIndex = index.toString();
-              });
+              Array.prototype.slice
+                .call(parent.childNodes, 0)
+                .filter((node) => isWindow(node))
+                .sort((a, b) => {
+                  if (a.style.position === b.style.position) {
+                    const az = a.style.zIndex ? parseInt(a.style.zIndex) : 0;
+                    const bz = b.style.zIndex ? parseInt(b.style.zIndex) : 0;
+                    return az - bz;
+                  } else {
+                    return a.style.position < b.style.position ? -1 : 1;
+                  }
+                })
+                .forEach((node, index) => {
+                  node.style.zIndex = index.toString();
+                });
+            }
           }
-        }
+          return { ...params, real: { ...params.real, active } };
+        });
       };
       const onAnimationEnd = () => {
         setParams((p) => ({ ...p, real: { ...p.real, state: p.state } }));
@@ -245,7 +244,6 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
           relativePoint,
           real: {
             ...params.real,
-            active: refActive.current,
             x,
             y,
             width,
@@ -260,11 +258,11 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
     e: React.MouseEvent<HTMLElement, MouseEvent> | React.TouchEvent<HTMLElement>
   ) => {
     e.stopPropagation();
+    foreground(e.target as HTMLElement);
     setParams((params) => {
       if (params.node) return params;
       const node = e.target as HTMLElement;
       const className = node.className;
-      foreground(node);
       return {
         ...params,
         node,
@@ -272,7 +270,6 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
         relativePoint: { x: 0, y: 0 },
         nodeType: (className as BorderType) || "",
         event: e.nativeEvent,
-        real: { ...params.real, active: refActive.current },
       };
     });
   };
@@ -308,10 +305,10 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
       }
     }
     if (real.state === "min") {
-      return { ...real, active: refActive.current, height: 32 };
+      return { ...real, height: 32 };
     }
-    return { ...real, active: refActive.current };
-  }, [params.real, refActive.current]);
+    return { ...real };
+  }, [params.real]);
   return {
     params: real,
     handleWindow,
