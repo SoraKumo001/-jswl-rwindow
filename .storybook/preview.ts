@@ -1,3 +1,4 @@
+import "@storybook/addon-console";
 import { withScreenshot } from "storycap";
 
 export const decorators = [withScreenshot];
