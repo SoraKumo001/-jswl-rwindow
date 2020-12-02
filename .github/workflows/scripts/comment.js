@@ -15,34 +15,30 @@ const readFileList = (pathName) =>
 const getDiffList = (targetList, srcList) =>
   targetList.filter((name) => !srcList.includes(name));
 
-Promise.all([
-  readFileList("temp/index.txt"),
-  readFileList("__image_snapshots__/index.txt"),
-  readFileList("__image_diff__/index.txt"),
-]).then(([targetList, srcList, dffList]) => {
-  const addList = getDiffList(srcList, targetList);
-  const delList = getDiffList(targetList, srcList);
-
-  const body = `
+readFileList("temp/index.json")
+  .catch(() => null)
+  .then((e) => e.json())
+  .then((file) => {
+    const body = `
 <${url}>  
 
-Images: ${srcList.length}  
-Faild: ${dffList.length}  
-New: ${addList.length}  
-Delete: ${delList.length}  
+Images: ${file?.actualItems.length || 0}  
+Faild: ${file?.diffItems.length || 0}   
+New: ${file?.newItems.length || 0}  
+Delete: ${file?.deletedItems.length || 0}  
 `;
 
-  request.post(
-    {
-      uri: `https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${num}/comments?access_token=${GITHUB_TOKEN}`,
-      headers: {
-        "User-Agent": "https://api.github.com/meta",
-        "Content-type": "application/json",
+    request.post(
+      {
+        uri: `https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${num}/comments?access_token=${GITHUB_TOKEN}`,
+        headers: {
+          "User-Agent": "https://api.github.com/meta",
+          "Content-type": "application/json",
+        },
+        json: { body },
       },
-      json: { body },
-    },
-    (_error, _response, body) => {
-      console.log(body);
-    }
-  );
-});
+      (_error, _response, body) => {
+        console.log(body);
+      }
+    );
+  });

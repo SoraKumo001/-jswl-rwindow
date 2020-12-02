@@ -13,7 +13,7 @@
     "lint:fix": "eslint --fix --ext .js,.ts,.tsx src",
     "test:screenshot": "rimraf __screenshots__ && npm-run-all -p -r sc:*",
     "sc:start-storybook": "http-server -s -p 9001 storybook-static",
-    "sc:screenshot": "storycap http://localhost:9001",
+    "sc:screenshot": "storycap -p 5 http://localhost:9001",
     "sf": "node bin/sf"
   },
   "publishConfig": {
