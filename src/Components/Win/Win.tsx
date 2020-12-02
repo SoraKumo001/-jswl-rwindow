@@ -1,9 +1,20 @@
-import React, { FC, useRef } from "react";
+import React, {
+  Dispatch,
+  FC,
+  MutableRefObject,
+  useEffect,
+  useRef,
+} from "react";
 import { Border } from "../Border";
 import { Client } from "../Client";
 import { TitleBar } from "../TitleBar";
 import { Root } from "./Win.styled";
-import { useWindow, WindowState } from "./../../libs/WindowManager";
+import {
+  ActionType,
+  useWindow,
+  WindowParams,
+  WindowState,
+} from "./../../libs/WindowManager";
 
 type Props = {
   title?: string;
@@ -14,6 +25,8 @@ type Props = {
   moveable?: boolean;
   child?: boolean;
   state?: WindowState;
+  dispatch?: MutableRefObject<Dispatch<ActionType>>;
+  onUpdate?: (params: WindowParams) => void;
 };
 
 /**
@@ -30,6 +43,8 @@ export const Win: FC<Props> = ({
   child,
   state,
   children,
+  dispatch: refDispatch,
+  onUpdate,
 }) => {
   const refWindow = useRef<HTMLDivElement>(null);
   const { params, handleWindow, dispatch } = useWindow(() => ({
@@ -42,7 +57,13 @@ export const Win: FC<Props> = ({
     child: child === true,
     state: state ?? "hide",
   }));
-  return params.state === "close" ? null : (
+  useEffect(() => {
+    if (refDispatch) refDispatch.current = dispatch;
+  }, [refDispatch]);
+  useEffect(() => {
+    onUpdate?.(params);
+  }, [params]);
+  return (
     <Root
       ref={refWindow}
       onMouseDown={handleWindow}

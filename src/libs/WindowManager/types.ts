@@ -59,3 +59,18 @@ export type MoveParams =
 export interface MEvent extends Event {
   params?: unknown;
 }
+
+export type WindowParams = {
+  active: boolean;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  child: boolean;
+  state: WindowState;
+};
+
+export type ActionType = {
+  type: "state";
+  payload: WindowState;
+};
