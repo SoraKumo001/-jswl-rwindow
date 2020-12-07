@@ -6,14 +6,15 @@ jobs:
   Close:
     runs-on: ubuntu-latest
     steps:
+      - name: Set env
+        run: |
+          echo export BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`--`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'` >> ~/.env
       - name: Git init
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           TARGET_PATH: captures
         run: |
-          TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
-          BRANCH=${BRANCH}--${TARGET}
+          source ~/.env
           mkdir -p __gh-pages__
           cd __gh-pages__
           git init
@@ -30,21 +31,17 @@ jobs:
           TARGET_PATH: captures
         working-directory: ./__gh-pages__
         run: |
-          TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
+          source ~/.env
           BRANCH=${BRANCH}--${TARGET}
           rm -rf ${TARGET_PATH}/${BRANCH} || true
-          git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt
       - name: Save gh-pages
         working-directory: ./__gh-pages__
         run: |
-          TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
+          source ~/.env
           BRANCH=${BRANCH}--${TARGET}
-          for i in `seq 2` ; do
+          for i in `seq 5` ; do
+            git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt
             git add .
-            git commit -m "delete ${BRANCH}" || true
-            (git push origin gh-pages && break) || 
-              (git pull origin gh-pages && git push origin gh-pages && break) || 
-              (git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt)
-          done
+            git commit -m "Close ${BRANCH}" || true
+            (git push origin gh-pages && break) || git push origin gh-pages 
+           done

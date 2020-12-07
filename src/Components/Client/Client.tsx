@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { WindowState } from "../../libs/WindowManager";
+import type { WindowState } from "../../libs/WindowManager";
 import { Root } from "./Client.styled";
 
 type Props = {

@@ -173,12 +173,12 @@ export const useWindow = (windowParams: Props | (() => Props)) => {
         });
       };
 
-      let timeHandle = 0;
+      let timeHandle: ReturnType<typeof setTimeout> | null = null;
       const onParentSize = () => {
         if (!timeHandle)
           timeHandle = setTimeout(() => {
             setParams((params) => ({ ...params, real: { ...params.real } }));
-            timeHandle = 0;
+            timeHandle = null;
           }, 1);
       };
       ref.current.addEventListener("active", onActive);

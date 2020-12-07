@@ -4,7 +4,6 @@ import React, {
   MutableRefObject,
   ReactNode,
   useEffect,
-  useMemo,
   useRef,
 } from "react";
 import { ResizeFrame } from "../ResizeFrame";
@@ -99,52 +98,49 @@ export const Win: FC<Props> = ({
   useEffect(() => {
     onUpdate?.(params);
   }, [params]);
-  return useMemo(
-    () => (
-      <Root
-        ref={refWindow}
-        onMouseDown={handleWindow}
-        titleSize={titleSize}
-        style={{
-          left: `${params.x}px`,
-          top: `${params.y}px`,
-          width: `${params.width}px`,
-          height: `${params.height}px`,
-          position: overlapped ? "fixed" : "absolute",
-        }}
-      >
-        {titleEnable && (
-          <TitleBar
-            titleSize={titleSize}
-            frameSize={frameSize}
-            buttons={titleButtons}
-            active={params.active}
-            state={params.state}
-            onMouse={handleWindow}
-            dispatch={dispatch}
-          >
-            {title}
-          </TitleBar>
-        )}
-        <Client
-          className={clientClass}
-          style={clientStyle}
+  return (
+    <Root
+      ref={refWindow}
+      onMouseDown={handleWindow}
+      titleSize={titleSize}
+      style={{
+        left: `${params.x}px`,
+        top: `${params.y}px`,
+        width: `${params.width}px`,
+        height: `${params.height}px`,
+        position: overlapped ? "fixed" : "absolute",
+      }}
+    >
+      {titleEnable && (
+        <TitleBar
+          titleSize={titleSize}
           frameSize={frameSize}
-          onMouse={handleWindow}
+          buttons={titleButtons}
+          active={params.active}
           state={params.state}
-          movable={clientMovable}
+          onMouse={handleWindow}
+          dispatch={dispatch}
         >
-          {children}
-        </Client>
-        {resize && (
-          <ResizeFrame
-            frameSize={frameSize}
-            resizeBold={resizeBold}
-            onMouse={handleWindow}
-          />
-        )}
-      </Root>
-    ),
-    [params]
+          {title}
+        </TitleBar>
+      )}
+      <Client
+        className={clientClass}
+        style={clientStyle}
+        frameSize={frameSize}
+        onMouse={handleWindow}
+        state={params.state}
+        movable={clientMovable}
+      >
+        {children}
+      </Client>
+      {resize && (
+        <ResizeFrame
+          frameSize={frameSize}
+          resizeBold={resizeBold}
+          onMouse={handleWindow}
+        />
+      )}
+    </Root>
   );
 };

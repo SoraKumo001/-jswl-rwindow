@@ -1,6 +1,7 @@
 import * as path from "path";
 import { Configuration } from "webpack";
 import { createTransformer } from "typescript-plugin-styled-components";
+const svgToTinyDataUri = require("mini-svg-data-uri");
 
 const config: Configuration = {
   mode: "production",
@@ -28,8 +29,14 @@ const config: Configuration = {
         ],
       },
       {
-        test: /\.(svg)$/,
-        use: [{ loader: "url-loader" }, { loader: "svgo-loader" }],
+        test: /\.svg/,
+        type: "asset/inline",
+        generator: {
+          dataUrl: (content: Buffer) => {
+            return svgToTinyDataUri(content.toString());
+          },
+        },
+        use: [{ loader: "svgo-loader" }],
       },
     ],
   },

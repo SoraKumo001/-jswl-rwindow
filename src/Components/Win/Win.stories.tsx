@@ -1,6 +1,6 @@
 import React, { Dispatch, useRef, useState } from "react";
 import { Win } from ".";
-import { ActionType, WindowParams } from "../../libs/WindowManager";
+import type { ActionType, WindowParams } from "../../libs/WindowManager";
 import { Decorator } from "../../storybook";
 
 export default {
@@ -165,19 +165,19 @@ export const TitleButton = () => (
     <Win
       title="最小化アイコン無し"
       titleButtons={{ min: false }}
-      height={100}
+      height={120}
     />
     <Win
       title="最大化アイコン無し"
       titleButtons={{ max: false }}
-      height={100}
-      y={100}
+      height={120}
+      y={130}
     />
     <Win
       title="Closeアイコン無し"
       titleButtons={{ close: false }}
-      height={100}
-      y={200}
+      height={120}
+      y={260}
     />
   </>
 );

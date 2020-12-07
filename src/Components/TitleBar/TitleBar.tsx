@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { WindowDispatch, WindowState } from "../../libs/WindowManager";
+import type { WindowDispatch, WindowState } from "../../libs/WindowManager";
 import { Icon, Icons } from "../Icon";
 import { Root } from "./TitleBar.styled";
 

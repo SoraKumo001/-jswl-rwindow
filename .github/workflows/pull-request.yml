@@ -2,7 +2,8 @@ name: Pull request
 on:
   pull_request:
 jobs:
-  Create_pull_snapshot:
+  Modules:
+    name: Modules
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,42 +17,74 @@ jobs:
       - name: Package install
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn
+  Storybook:
+    needs: Modules
+    name: Build storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Build storybook
+        run: yarn storybook:build
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Storybook
+          path: storybook-static
+  Gh-Pages:
+    needs: Storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set env
+        run: |
+          echo export BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`--`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'` >> ~/.env
+          echo export TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'` >> ~/.env
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
       - name: Pull Target Shapshot
-        if: ${{github.ref != 'refs/heads/master'}}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           WORK_DIR: temp
           TARGET_PATH: captures
           SRC_PATH: __screenshots__
         run: |
-          BRANCH=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`         
-          mkdir -p ${WORK_DIR}/${TARGET_PATH}/${BRANCH}
+          source ~/.env
+          mkdir -p ${WORK_DIR}/${TARGET_PATH}/${TARGET}
           cd ${WORK_DIR}
           git init
           git config --global user.name $GITHUB_ACTOR
           git config --global user.email ${GITHUB_ACTOR}@git
           git config core.sparsecheckout true
           git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
-          echo /${TARGET_PATH}/${BRANCH} > .git/info/sparse-checkout    
+          echo /${TARGET_PATH}/${TARGET} > .git/info/sparse-checkout    
           git pull origin gh-pages || true
           git checkout -b gh-pages   
-          mv -f ${TARGET_PATH}/${BRANCH}/${SRC_PATH} .. || true
-      - name: Storybook
-        run: yarn storybook:build
+          mv -f ${TARGET_PATH}/${TARGET}/${SRC_PATH} .. || true
+      - uses: actions/download-artifact@v2
+        with:
+          name: Storybook
+          path: storybook-static
       - name: Screenshot
-        if: ${{github.ref != 'refs/heads/master'}}
         run: |
           yarn test:screenshot
           yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
-          cp __image_diff__/index.json .
       - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           TARGET_PATH: captures
         run: |
-          TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
-          BRANCH=${BRANCH}--${TARGET}
+          source ~/.env
           mkdir __gh-pages__
           cd __gh-pages__
           git init
@@ -67,29 +100,27 @@ jobs:
         env:
           TARGET_PATH: captures
           SRC_PATH1: storybook-static
-          SRC_PATH2: __screenshots__
-          SRC_PATH3: __image_diff__
+          SRC_PATH2: screenshots
+          SRC_PATH3: image_diff
         working-directory: ./__gh-pages__
         run: |
-          TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
-          BRANCH=${BRANCH}--${TARGET}
+          source ~/.env
           rm -rf ${TARGET_PATH}/${BRANCH} || true
           mkdir -p ${TARGET_PATH}/${BRANCH}
           mv ../${SRC_PATH1} ${TARGET_PATH}/${BRANCH}/stories
-          mv ../${SRC_PATH2} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH2} | sed -r "s/__(.*)__/\1/"` || true
-          mv ../${SRC_PATH3} ${TARGET_PATH}/${BRANCH}/`echo ${SRC_PATH3} | sed -r "s/__(.*)__/\1/"` || true
-          git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
+          mv ../__${SRC_PATH2}__ ${TARGET_PATH}/${BRANCH}/${SRC_PATH2} || true
+          mv ../__${SRC_PATH3}__ ${TARGET_PATH}/${BRANCH}/${SRC_PATH3} || true
       - name: Save gh-pages
+        env:
+          TARGET_PATH: captures
         working-directory: ./__gh-pages__
         run: |
-          TARGET=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  
-          BRANCH=`echo ${GITHUB_HEAD_REF} | sed -e 's/\//-/g'`
-          BRANCH=${BRANCH}--${TARGET}
-          git add .
-          git commit -m "Create Snapshot($BRANCH)" || true
+          source ~/.env
           for i in `seq 5` ; do
-            (git push origin gh-pages && break) || sleep 5
+            git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
+            git add .
+            git commit -m "Create gh-pages(${BRANCH})" || true
+            (git push origin gh-pages && break) || git pull origin gh-pages  
           done
       - name: Write comment
         env:

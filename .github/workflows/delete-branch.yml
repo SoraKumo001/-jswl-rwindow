@@ -6,12 +6,15 @@ jobs:
   Delete_snapshot:
     runs-on: ubuntu-latest
     steps:
+      - name: Set env
+        run: |
+          echo export BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'` >> ~/.env
       - name: Git init
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
           TARGET_PATH: captures
         run: |
-          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
+          source ~/.env
           mkdir -p __gh-pages__/${TARGET_PATH}
           cd __gh-pages__
           git init
@@ -28,19 +31,17 @@ jobs:
           TARGET_PATH: captures
         working-directory: ./__gh-pages__
         run: |
-          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
+          source ~/.env
           rm -rf ${TARGET_PATH}/${BRANCH} || true
-          git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt
       - name: Save gh-pages
         env:
           TARGET_PATH: captures
         working-directory: ./__gh-pages__
         run: |
-          BRANCH=`cat $GITHUB_EVENT_PATH | jq -r ".ref" | sed -e 's/\//-/g'`
-          for i in `seq 2` ; do
+          source ~/.env
+          for i in `seq 5` ; do
+            git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt
             git add .
-            git commit -m "delete ${BRANCH}" || true
-            (git push origin gh-pages && break) || 
-              (git pull origin gh-pages && git push origin gh-pages && break) || 
-              (git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt)
+            git commit -m "Delete ${BRANCH}" || true
+            (git push origin gh-pages && break) || git pull origin gh-pages
           done

@@ -1,4 +1,4 @@
-import { StorybookConfig } from "@storybook/core/types";
+import type { StorybookConfig } from "@storybook/core/types";
 
 module.exports = {
   stories: ["../src/**/*.stories.@(tsx)"],

@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { PartsType } from "../../libs/WindowManager";
+import type { PartsType } from "../../libs/WindowManager";
 import { Root } from "./ResizeFrame.styled";
 
 export const Borders: PartsType[] = [
