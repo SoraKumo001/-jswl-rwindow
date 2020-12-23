@@ -72,7 +72,7 @@ jobs:
         run: |
           source ~/.env
           yarn screenshot
-          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json || true
+          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json -I -M 0.1
           jq -c ".target = \"$TARGET\"" __image_diff__/index.json > index.json
           cp -f index.json __image_diff__
       - name: Git init
