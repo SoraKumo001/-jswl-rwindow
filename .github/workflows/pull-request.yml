@@ -57,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           WORK_DIR: temp
           TARGET_PATH: captures
-          SRC_PATH: __screenshots__
+          SRC_PATH: screenshots
         run: |
           source ~/.env
           mkdir -p ${WORK_DIR}/${TARGET_PATH}/${TARGET}
@@ -79,6 +79,7 @@ jobs:
         run: |
           yarn screenshot
           yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
+          cp  __image_diff__/index.json ..
       - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
