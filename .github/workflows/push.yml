@@ -101,6 +101,7 @@ jobs:
           path: storybook-static
       - name: Screenshot
         run: |
+          source ~/.env
           yarn screenshot
           yarn reg-cli -I __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
           jq -c ".target = \"$TARGET\"" __image_diff__/index.json > index.json
@@ -150,5 +151,3 @@ jobs:
             git commit -m "Create gh-pages(${BRANCH})" || break
             (git push origin gh-pages && break) || git pull origin gh-pages  
           done
-
-
