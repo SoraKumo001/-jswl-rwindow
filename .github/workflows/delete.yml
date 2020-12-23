@@ -1,4 +1,4 @@
-name: Delete gh-pages
+name: Delete branch
 on:
   delete:
     branches-ignore: ["gh-pages"]
