@@ -113,7 +113,7 @@ jobs:
           for i in `seq 5` ; do
             git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
             git add .
-            git commit -m "Create gh-pages(${BRANCH})" || true
+            git commit -m "Create gh-pages(${BRANCH})" || break
             (git push origin gh-pages && break) || git pull origin gh-pages  
           done
       - name: Write comment

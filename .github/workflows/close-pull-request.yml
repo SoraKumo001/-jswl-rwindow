@@ -32,7 +32,6 @@ jobs:
         working-directory: ./__gh-pages__
         run: |
           source ~/.env
-          BRANCH=${BRANCH}--${TARGET}
           rm -rf ${TARGET_PATH}/${BRANCH} || true
       - name: Save gh-pages
         env:
@@ -40,10 +39,9 @@ jobs:
         working-directory: ./__gh-pages__
         run: |
           source ~/.env
-          BRANCH=${BRANCH}--${TARGET}
           for i in `seq 5` ; do
             git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt
             git add .
             git commit -m "Close ${BRANCH}" || true
             (git push origin gh-pages && break) || git push origin gh-pages 
-           done
+          done
