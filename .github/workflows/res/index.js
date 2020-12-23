@@ -7,7 +7,9 @@ const getSearchParams = () =>
   );
 
 const getBranches = async () => {
-  const res = await fetch("./captures/index.txt?" + Date.now()).catch(() => null);
+  const res = await fetch("./captures/index.txt?" + Date.now()).catch(
+    () => null
+  );
   return res && (await res.text()).split("\n").filter((v) => v);
 };
 const getImages = async (story) => [
@@ -30,6 +32,7 @@ const stories = () => {
         {
           branch: image[0].split("--")[0],
           target: image[1]?.target,
+          isPR: !!image[0].split("--")[1],
           images: [
             image[1]?.actualItems || [],
             image[1]?.diffItems || [],
@@ -56,9 +59,9 @@ const stories = () => {
         title.innerText = file;
         box.appendChild(title);
         const img = document.createElement("img");
-        img.src = `./captures/${index < 3 ? branch : storyInfo.target || "master"}/${
-          index !== 1 ? "screenshots" : "image_diff"
-        }/${file}`;
+        img.src = `./captures/${
+          index < 3 ? branch : storyInfo.target || "master"
+        }/${index !== 1 ? "screenshots" : "image_diff"}/${file}`;
         img.onclick = () => {
           open(img.src, "_blank");
         };
@@ -69,7 +72,9 @@ const stories = () => {
           target ? `=${target}` : ""
         }] tr:nth-of-type(2) td:nth-of-type(${index + 1})`
       );
-      document.querySelectorAll("table .select").forEach((node) => node.classList.remove("select"));
+      document
+        .querySelectorAll("table .select")
+        .forEach((node) => node.classList.remove("select"));
       if (cell) cell.classList.add("select");
     };
 
@@ -102,7 +107,7 @@ const stories = () => {
       const cellStory = table.insertRow().insertCell();
       cellStory.colSpan = 4;
       cellStory.innerHTML = `<a class="link" target="_blank" href='./captures/${name}/stories/?${Date.now()}'+>${
-        info.target ? "[PR]" : ""
+        info.isPR ? "[PR]" : ""
       }${info.branch} → ${info.target || "master"}</a>`;
     });
     updateImage();
