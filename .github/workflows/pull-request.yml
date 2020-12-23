@@ -60,8 +60,7 @@ jobs:
           SRC_PATH: screenshots
         run: |
           source ~/.env
-          mkdir -p ${WORK_DIR}
-          cd ${WORK_DIR}
+          mkdir -p $WORK_DIR && cd $WORK_DIR
           git clone -b gh-pages --sparse --single-branch https://github.com/SoraKumo001/jswl-rwindow . || exit
           git sparse-checkout add ${TARGET_PATH}/${TARGET}/${SRC_PATH}
           mv ${TARGET_PATH}/${TARGET}/${SRC_PATH} .. || true
@@ -73,7 +72,7 @@ jobs:
         run: |
           yarn screenshot
           yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json || true
-          cp  __image_diff__/index.json ..
+          cp  __image_diff__/index.json .
       - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
