@@ -98,7 +98,7 @@ jobs:
           git config --global user.email ${GITHUB_ACTOR}@git
           git config core.sparsecheckout true
           git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
-          echo /${TARGET_PATH}/${TARGET_BRANCH} > .git/info/sparse-checkout    
+          echo /${TARGET_PATH}/${TARGET_BRANCH}/${SRC_PATH} > .git/info/sparse-checkout    
           git pull origin gh-pages || true
           git checkout -b gh-pages   
           mv -f ${TARGET_PATH}/${TARGET_BRANCH}/${SRC_PATH} .. || true
@@ -109,7 +109,7 @@ jobs:
       - name: Screenshot
         run: |
           yarn screenshot
-          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
+          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json || true
       - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
