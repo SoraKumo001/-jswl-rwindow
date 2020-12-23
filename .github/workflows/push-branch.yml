@@ -75,7 +75,7 @@ jobs:
       - name: Set env
         run: |
           echo export BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'` >> ~/.env
-          echo export TARGET_BRANCH=`echo ${GITHUB_BASE_REF} | sed -e 's/\//-/g'`  >> ~/.env
+          echo export TARGET=`jq -r ".repository.default_branch" $GITHUB_EVENT_PATH`  >> ~/.env
       - name: Cache modules(yarn.lock)
         id: cache
         uses: actions/cache@v2
@@ -91,17 +91,10 @@ jobs:
           SRC_PATH: screenshots
         run: |
           source ~/.env
-          mkdir -p ${WORK_DIR}/${TARGET_PATH}/${TARGET_BRANCH}
-          cd ${WORK_DIR}
-          git init
-          git config --global user.name $GITHUB_ACTOR
-          git config --global user.email ${GITHUB_ACTOR}@git
-          git config core.sparsecheckout true
-          git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
-          echo /${TARGET_PATH}/${TARGET_BRANCH} > .git/info/sparse-checkout    
-          git pull origin gh-pages || true
-          git checkout -b gh-pages   
-          mv -f ${TARGET_PATH}/${TARGET_BRANCH}/${SRC_PATH} .. || true
+          mkdir -p $WORK_DIR && cd $WORK_DIR
+          git clone -b gh-pages --sparse --single-branch https://github.com/SoraKumo001/jswl-rwindow . || exit
+          git sparse-checkout add ${TARGET_PATH}/${TARGET}/${SRC_PATH}
+          mv ${TARGET_PATH}/${TARGET}/${SRC_PATH} .. || true
       - uses: actions/download-artifact@v2
         with:
           name: Storybook
@@ -109,7 +102,7 @@ jobs:
       - name: Screenshot
         run: |
           yarn screenshot
-          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
+          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json || true
       - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

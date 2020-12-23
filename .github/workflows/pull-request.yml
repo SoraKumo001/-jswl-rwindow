@@ -57,28 +57,22 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           WORK_DIR: temp
           TARGET_PATH: captures
-          SRC_PATH: __screenshots__
+          SRC_PATH: screenshots
         run: |
           source ~/.env
-          mkdir -p ${WORK_DIR}/${TARGET_PATH}/${TARGET}
-          cd ${WORK_DIR}
-          git init
-          git config --global user.name $GITHUB_ACTOR
-          git config --global user.email ${GITHUB_ACTOR}@git
-          git config core.sparsecheckout true
-          git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
-          echo /${TARGET_PATH}/${TARGET} > .git/info/sparse-checkout    
-          git pull origin gh-pages || true
-          git checkout -b gh-pages   
-          mv -f ${TARGET_PATH}/${TARGET}/${SRC_PATH} .. || true
+          mkdir -p $WORK_DIR && cd $WORK_DIR
+          git clone -b gh-pages --sparse --single-branch https://github.com/SoraKumo001/jswl-rwindow . || exit
+          git sparse-checkout add ${TARGET_PATH}/${TARGET}/${SRC_PATH}
+          mv ${TARGET_PATH}/${TARGET}/${SRC_PATH} .. || true
       - uses: actions/download-artifact@v2
         with:
           name: Storybook
           path: storybook-static
       - name: Screenshot
         run: |
-          yarn test:screenshot
-          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
+          yarn screenshot
+          yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json || true
+          cp __image_diff__/index.json .
       - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -27,8 +27,9 @@ const stories = () => {
     const headers = ["Img", "Diff", "Add", "Del"];
     const images = snapshots
       .map((image) => [
-        image[0].split("--")[0],
+        image[0],
         {
+          branch: image[0].split("--")[0],
           target: image[0].split("--")[1],
           images: [
             image[1]?.actualItems || [],
@@ -57,7 +58,7 @@ const stories = () => {
         title.innerText = file;
         box.appendChild(title);
         const img = document.createElement("img");
-        img.src = `./captures/${index !== 3 ? branch : storyInfo.target || "master"}/${
+        img.src = `./captures/${index < 3 ? branch : storyInfo.target || "master"}/${
           index !== 1 ? "screenshots" : "image_diff"
         }/${file}`;
         img.onclick = () => {
@@ -112,7 +113,7 @@ const stories = () => {
       cellStory.colSpan = 4;
       cellStory.innerHTML = `<a class="link" target="_blank" href='./captures/${name}/stories/?${Date.now()}'+>${
         info.target ? "[PR]" : ""
-      }${name} → ${info.target || "master"}</a>`;
+      }${info.branch} → ${info.target || "master"}</a>`;
     });
     updateImage();
     addEventListener("popstate", updateImage);
