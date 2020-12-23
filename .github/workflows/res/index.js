@@ -23,14 +23,13 @@ const getSnapshotList = async () =>
 const snapshotList = getSnapshotList();
 const stories = () => {
   snapshotList.then((snapshots) => {
-    console.log(snapshots);
     const headers = ["Img", "Diff", "Add", "Del"];
     const images = snapshots
       .map((image) => [
         image[0],
         {
           branch: image[0].split("--")[0],
-          target: image[0].split("--")[1],
+          target: image[1]?.target,
           images: [
             image[1]?.actualItems || [],
             image[1]?.diffItems || [],
@@ -40,12 +39,11 @@ const stories = () => {
         },
       ])
       .sort((a, b) => (a[0] === "master" ? -1 : a[0] < b[0] ? -1 : 1));
-    const imagesHash = Object.fromEntries(images);
 
     const updateImage = () => {
       const params = getSearchParams();
       const index = Math.max(headers.indexOf(params["prefix"]), 0);
-      const branch = params["branch"] || "master";
+      const branch = params["branch"];
       const target = params["target"] || "";
       const storyInfo = images.find(
         ([name, info]) => name === branch && (!target || info.target == target)
@@ -74,14 +72,6 @@ const stories = () => {
       document.querySelectorAll("table .select").forEach((node) => node.classList.remove("select"));
       if (cell) cell.classList.add("select");
     };
-    images.forEach((story) => {
-      const srcInfo = story[1];
-      const targetInfo = imagesHash[srcInfo.target || "master"];
-      if (targetInfo) {
-        srcInfo.images[2] = srcInfo.images[0].filter((i) => !targetInfo.images[0].includes(i));
-        srcInfo.images[3] = targetInfo.images[0].filter((i) => !srcInfo.images[0].includes(i));
-      }
-    });
 
     images.forEach(([name, info]) => {
       const list = document.querySelector(".list");
