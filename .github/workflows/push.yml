@@ -103,7 +103,8 @@ jobs:
         run: |
           yarn screenshot
           yarn reg-cli -I __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
-          jq -c ".target = \"$TARGET\"" __image_diff__/index.json > __image_diff__/index.json
+          jq -c ".target = \"$TARGET\"" __image_diff__/index.json > index.json
+          cp -f index.json __image_diff__
       - name: Git init
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
