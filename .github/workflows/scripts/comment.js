@@ -9,7 +9,7 @@ const url = `https://${rep[0]}.github.io/${rep[1]}/`;
 const readFileList = (pathName) =>
   fs.promises
     .readFile(pathName, { encoding: "utf-8" })
-    .then((e) => e.json())
+    .then((e) => JSON.parse(e))
     .catch(() => {});
 
 readFileList("index.json")
