@@ -177,7 +177,7 @@ export const TitleButton = () => (
       title="Closeアイコン無し"
       titleButtons={{ close: false }}
       height={120}
-      y={260}
+      y={270}
     />
   </>
 );
