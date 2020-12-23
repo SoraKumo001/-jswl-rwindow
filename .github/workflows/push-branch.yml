@@ -74,9 +74,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set env
         run: |
-          env
+          cat $GITHUB_EVENT_PATH
           echo export BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'` >> ~/.env
-          echo export TARGET=`echo $GITHUB_BASE_REF | sed -e 's/\//-/g'`  >> ~/.env
+          echo export TARGET=master #`echo $GITHUB_BASE_REF | sed -e 's/\//-/g'`  >> ~/.env
       - name: Cache modules(yarn.lock)
         id: cache
         uses: actions/cache@v2
@@ -92,8 +92,7 @@ jobs:
           SRC_PATH: screenshots
         run: |
           source ~/.env
-          mkdir -p ${WORK_DIR}
-          cd ${WORK_DIR}
+          mkdir -p $WORK_DIR && cd $WORK_DIR
           git clone -b gh-pages --sparse --single-branch https://github.com/SoraKumo001/jswl-rwindow . || exit
           git sparse-checkout add ${TARGET_PATH}/${TARGET}/${SRC_PATH}
           mv ${TARGET_PATH}/${TARGET}/${SRC_PATH} .. || true
