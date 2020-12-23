@@ -60,7 +60,7 @@ jobs:
           SRC_PATH: screenshots
         run: |
           source ~/.env
-          mkdir -p ${WORK_DIR}/${TARGET_PATH}/${TARGET}
+          mkdir -p ${WORK_DIR}
           cd ${WORK_DIR}
           git clone -b gh-pages --sparse --single-branch https://github.com/SoraKumo001/jswl-rwindow . || exit
           git sparse-checkout add ${TARGET_PATH}/${TARGET}/${SRC_PATH}
