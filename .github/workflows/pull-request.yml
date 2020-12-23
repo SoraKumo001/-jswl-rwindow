@@ -77,7 +77,7 @@ jobs:
           path: storybook-static
       - name: Screenshot
         run: |
-          yarn test:screenshot
+          yarn screenshot
           yarn reg-cli __screenshots__ screenshots __image_diff__ -J __image_diff__/index.json
       - name: Git init
         env:
