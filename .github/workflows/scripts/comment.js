@@ -12,7 +12,7 @@ const readFileList = (pathName) =>
     .then((e) => e.json())
     .catch(() => {});
 
-readFileList("temp/index.json")
+readFileList("index.json")
   .then((params) => {
     const body = `
 <${url}>  
