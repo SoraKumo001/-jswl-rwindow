@@ -75,7 +75,7 @@ jobs:
       - name: Set env
         run: |
           echo export BRANCH=`echo $GITHUB_REF | sed 's/^refs\/heads\///' | sed -e 's/\//-/g'` >> ~/.env
-          echo export TARGET=`jq -r ".repository.default_branch" $GITHUB_EVENT_PATH`  >> ~/.env
+          echo export TARGET=`jq -r ".repository.default_branch" $GITHUB_EVENT_PATH | sed -e 's/\//-/g'`  >> ~/.env
       - name: Cache modules(yarn.lock)
         id: cache
         uses: actions/cache@v2
