@@ -25,7 +25,7 @@ Primary.parameters = {
 export const ParentAndChild = () => (
   <>
     <Win title="Top Window1" x={10} y={10}>
-      コンテンツ
+      Contents
       <Win
         title="Child Window(Client)"
         width={400}
