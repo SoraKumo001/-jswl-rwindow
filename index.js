@@ -7,9 +7,7 @@ const getSearchParams = () =>
   );
 
 const getBranches = async () => {
-  const res = await fetch("./captures/index.txt?" + Date.now()).catch(
-    () => null
-  );
+  const res = await fetch("./captures/index.txt?" + Date.now()).catch(() => null);
   return res && (await res.text()).split("\n").filter((v) => v);
 };
 const getImages = async (story) => [
@@ -54,14 +52,41 @@ const stories = () => {
       const box = document.querySelector(".images");
       while (box.childNodes.length) box.removeChild(box.childNodes[0]);
       storyInfo?.images[index].forEach((file) => {
-        const title = document.createElement("div");
+        const title = document.createElement("a");
         title.className = "imageTitle";
         title.innerText = file;
+        title.target = "_blank";
+        title.href = `captures/${branch}/stories/?path=/story/${file
+          .match(/(.*)_.*$/)[1]
+          .replace(/(.*)\/(.*)$/, "$1--$2")
+          .replace(/\/ /g, "-")}`;
         box.appendChild(title);
+        if (index === 1) {
+          const buttons = document.createElement("div");
+          box.appendChild(buttons);
+          ["Self", "Diff", "Target"].forEach((name) => {
+            const button = document.createElement("button");
+            button.innerText = name;
+            buttons.appendChild(button);
+            button.onclick = () => {
+              switch (name) {
+                case "Target":
+                  img.src = `./captures/${storyInfo.target}/screenshots/${file}`;
+                  break;
+                case "Diff":
+                  img.src = `./captures/${branch}/image_diff/${file}`;
+                  break;
+                case "Self":
+                  img.src = `./captures/${branch}/screenshots/${file}`;
+                  break;
+              }
+            };
+          });
+        }
         const img = document.createElement("img");
-        img.src = `./captures/${
-          index < 3 ? branch : storyInfo.target || "master"
-        }/${index !== 1 ? "screenshots" : "image_diff"}/${file}`;
+        img.src = `./captures/${index < 3 ? branch : storyInfo.target || "master"}/${
+          index !== 1 ? "screenshots" : "image_diff"
+        }/${file}`;
         img.onclick = () => {
           open(img.src, "_blank");
         };
@@ -72,9 +97,7 @@ const stories = () => {
           target ? `=${target}` : ""
         }] tr:nth-of-type(2) td:nth-of-type(${index + 1})`
       );
-      document
-        .querySelectorAll("table .select")
-        .forEach((node) => node.classList.remove("select"));
+      document.querySelectorAll("table .select").forEach((node) => node.classList.remove("select"));
       if (cell) cell.classList.add("select");
     };
 

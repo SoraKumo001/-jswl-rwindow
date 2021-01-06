@@ -53,6 +53,7 @@ table {
 }
 
 .imageTitle {
+  display: block;
   text-align: center;
   border-bottom: 1px solid;
 }
