@@ -9,15 +9,14 @@ export default {
   component: Win,
 };
 
-export const Primary = (args: Parameters<typeof Win>[0]) => {
-  return (
-    <>
-      <div style={{ position: "relative", height: "730px" }}>
-        <Win {...args}>Contents</Win>
-      </div>
-    </>
-  );
-};
+export const Primary = (args: Parameters<typeof Win>[0]) => (
+  <>
+    <div style={{ position: "relative", height: "730px" }}>
+      <Win {...args}>Contents</Win>
+    </div>
+  </>
+);
+
 Primary.args = { title: "Title", overlapped: false };
 Primary.parameters = {
   viewMode: "docs",
@@ -32,7 +31,7 @@ export const ParentAndChild = () => (
         height={200}
         overlapped={false}
       >
-        内側専用
+        Inside only
       </Win>
       <Win
         title="Child Window(Overlap)"
@@ -42,11 +41,11 @@ export const ParentAndChild = () => (
         height={200}
         active={true}
       >
-        外側に出られる
+        Can go out
       </Win>
     </Win>
     <Win title="TopWindow2" x={350} y={350} width={300} height={200}>
-      コンテンツ
+      Contents
     </Win>
   </>
 );
