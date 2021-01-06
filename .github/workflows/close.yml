@@ -43,5 +43,5 @@ jobs:
             git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | sed /^${BRANCH}$/d | sort -u > ${TARGET_PATH}/index.txt
             git add .
             git commit -m "Close ${BRANCH}" || break
-            (git push origin gh-pages && break) || git pull origin gh-pages 
+            (git push origin gh-pages && break) || git reset --hard origin gh-pages
           done

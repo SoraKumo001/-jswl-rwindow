@@ -61,7 +61,7 @@ jobs:
         run: |
           source ~/.env
           mkdir -p $WORK_DIR && cd $WORK_DIR
-          git clone -b gh-pages --sparse --single-branch https://github.com/SoraKumo001/jswl-rwindow . || exit
+          git clone -b gh-pages --sparse --single-branch https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY . || exit
           git sparse-checkout add ${TARGET_PATH}/${TARGET}/${SRC_PATH}
           mv ${TARGET_PATH}/${TARGET}/${SRC_PATH} .. || true
       - uses: actions/download-artifact@v2
@@ -116,7 +116,7 @@ jobs:
             git ls-files | sed -r "s/^${TARGET_PATH}\/([^\/]+)\/.*/\1/;t;d" | echo -e "`cat`\n${BRANCH}" | sort -u > ${TARGET_PATH}/index.txt
             git add .
             git commit -m "Create gh-pages(${BRANCH})" || break
-            (git push origin gh-pages && break) || git pull origin gh-pages  
+            (git push origin gh-pages && break) || git reset --hard origin gh-pages
           done
       - name: Write comment
         env:
